@@ -46,6 +46,28 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       // define association here
+      // define association here
+      // User.hasMany(models.Spot,{ foreignKey: 'ownerId'})
+      // User.hasMany(models.Review,{ foreignKey: 'userId'})
+      // User.hasMany(models.Booking, { foreignKey: 'userId' });
+      // User.hasMany(models.review, { foreignKey: 'userId', onDelete: 'CASCADE' })
+      User.hasMany(models.Review, {
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        hooks: true,
+      });
+      User.hasMany(models.Spot, {
+        foreignKey: "ownerId",
+        onDelete: "CASCADE",
+        hooks: true,
+      });
+
+      User.belongsToMany(models.Spot, {
+        through: models.Booking,
+        foreignKey: 'userId',
+        otherKey: 'spotId',
+        as: 'Owner'
+      })
     }
   };
 
@@ -103,7 +125,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       scopes: {
         currentUser: {
-          attributes: { exclude: ["hashedPassword"] }
+          attributes: { exclude: ["hashedPassword", "createdAt", "updatedAt"] }
         },
         loginUser: {
           attributes: {}
