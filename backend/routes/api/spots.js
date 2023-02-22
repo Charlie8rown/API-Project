@@ -117,3 +117,6 @@ router.get("/", validateQueryError, async (req, res, next) => {
     size,
   });
 });
+
+
+module.exports = router;
