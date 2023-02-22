@@ -13,20 +13,25 @@ module.exports = {
      * }], {});
     */
 
-    options.tableName = 'ReviewImages';
-
+    options.tableName = 'Reviews';
     return queryInterface.bulkInsert(options, [
       {
-        reviewId: 1,
-        url: 'https://lh3.googleusercontent.com/p/AF1QipN9j_k1RDzMXTOQCkwGKrHWMQV-VVvnCPhHFbZ_=s680-w680-h510',
+       spotId: 1,
+       userId: 1,
+       review: 'Very beautiful building, but way too many homeless around this area.',
+       stars: 2
       },
       {
-        reviewId: 2,
-        url:'https://lh3.googleusercontent.com/p/AF1QipNYcYqhVHxcADlMcNczg4vDm_3tm9lfkn_5TbUz=s680-w680-h510',
+        spotId: 2,
+        userId: 2,
+        review: 'Best views to have while chilling in the hot tub.',
+        stars: 4
       },
       {
-        reviewId: 3,
-        url:'https://lh3.googleusercontent.com/p/AF1QipOcNhDYREUzhUps9S4EOeIp0tnZtOxi9oU_h4qy=s680-w680-h510',
+        spotId: 3,
+        userId: 3,
+        review: 'Over priced a little scary.',
+        stars: 3
       }
     ])
   },
@@ -39,11 +44,11 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
 
-    options.tableName = 'ReviewImages'
+    options.tableName = 'Reviews'
     const Op = Sequelize.Op;
 
     await queryInterface.bulkDelete(options, {
-      reviewId:
+      userId:
       { [Op.in]: [1, 2, 3] }
     }, {})
   }
