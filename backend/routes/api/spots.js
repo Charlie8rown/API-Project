@@ -6,3 +6,9 @@ const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { validateCreatedSpots, validateBookings, validateQueryError, reviewValidateError } = require("./validations");
 const { Op } = require("sequelize");
+
+
+router.get('/', async (req, res, next) => {
+  const spots = await Spot.findAll();
+  res.json(spots)
+})
