@@ -16,7 +16,7 @@ const { Op } = require("sequelize");
 // Edit a Spot
 // Delete a Spot
 // Get all reviews by a spot's id
-
+// Get All Bookings for a Spot based on the spot's Id
 
 
 
@@ -440,6 +440,56 @@ router.post(
   }
 );
 
+
+// Get All Bookings for a Spot based on the spot's Id
+router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { spotId } = req.params;
+    const spot = await Spot.findByPk(spotId);
+
+    if (!spot) return next(createError(404, "Spot couldn't be found"));
+
+    let bookings;
+    const include = [
+      {
+        model: User,
+        attributes: {
+          exclude: [
+            "username",
+            "hashedPassword",
+            "email",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+      },
+    ];
+    if (userId === spot.ownerId) {
+      bookings = await Booking.findAll({
+        where: { spotId },
+        attributes: [
+          "id",
+          "spotId",
+          "userId",
+          "startDate",
+          "endDate",
+          "createdAt",
+          "updatedAt",
+        ],
+        include,
+      });
+    } else {
+      bookings = await Booking.findAll({
+        where: { spotId },
+        attributes: ["spotId", "startDate", "endDate"],
+      });
+    }
+    return res.json({ bookings });
+  } catch (error) {
+    return next(error);
+  }
+});
 
 
 module.exports = router;
