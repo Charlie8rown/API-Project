@@ -14,6 +14,7 @@ const { Op } = require("sequelize");
 // Create a Spot
 // Add an Image to a Spot based on the Spot's id // Create an Image for a Spot
 // Edit a Spot
+// Delete a Spot
 
 
 
@@ -317,5 +318,32 @@ router.put("/:spotId", requireAuth, validateCreatedSpots, async (req, res, next)
   });
   res.json(spot);
 });
+
+
+// Delete a Spot
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
+  try {
+    const id = req.params.spotId
+
+    const spot = await Spot.findByPk(id);
+    if (!spot) {
+      return res.status(404).json({
+        message: "Spot not found"
+      })
+    }
+    if (req.user.id !== spot.ownerId) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      })
+    }
+    await spot.destroy();
+    res.status(200).json({
+      message: "Successfully deleted"
+    })
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 module.exports = router;
