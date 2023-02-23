@@ -13,6 +13,7 @@ const { Op } = require("sequelize");
 // Get Details for a spot from an Id
 // Create a Spot
 // Add an Image to a Spot based on the Spot's id // Create an Image for a Spot
+// Edit a Spot
 
 
 
@@ -274,5 +275,47 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
 });
 
 
+// Edit a Spot
+router.put("/:spotId", requireAuth, validateCreatedSpots, async (req, res, next) => {
+  const id = req.user.id;
+  const { address, city, state, country, lat, lng, name, description, price } = req.body;
+  const spot = await Spot.findByPk(req.params.spotId);
+
+  if (!spot) {
+    const err = new Error("Spot Could NOT be found");
+    err.status = 404;
+    err.title = "Spot NOT valid";
+    err.errors = [
+      {
+        message: "Spot count Not be found. StatusCode: 404"
+      },
+    ];
+    return next(err);
+  };
+  if(id !== spot.ownerId){
+    const err = new Error("Forbidden");
+    err.status = 403;
+    err.title = "Require proper authorization";
+    err.errors = [
+      {
+        message: "Require proper authorization. statusCode: 403"
+      }
+    ]
+    return next(err);
+  };
+
+  spot.update({
+    address: address,
+    city: city,
+    state: state,
+    country: country,
+    lat: lat,
+    lng: lng,
+    name: name,
+    description: description,
+    price: price,
+  });
+  res.json(spot);
+});
 
 module.exports = router;
