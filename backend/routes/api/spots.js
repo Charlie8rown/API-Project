@@ -11,6 +11,7 @@ const { Op } = require("sequelize");
 // Get All Spots - with pagination and search feature
 // Get all Spots owned by the Current User
 // Get Details for a spot from an Id
+// Create a Spot
 
 
 // Get All Spots
@@ -201,6 +202,32 @@ router.get('/:spotId', async (req, res) => {
   spotJSON.numReviews = reviewCount;
   }
   return res.json(spotJSON)
+});
+
+
+// Create a Spot
+router.post("/", requireAuth, validateCreatedSpots, async (req, res) => {
+  const id = req.user.id;
+  const { address, city, state, country, lat, lng, name, description, price } =
+    req.body;
+
+  const createdSpot = await Spot.create({
+    ownerId: id,
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price,
+  });
+
+  if (createdSpot) {
+    res.status(201);
+    res.json(createdSpot);
+  }
 });
 
 
