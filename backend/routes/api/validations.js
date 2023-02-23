@@ -1,5 +1,5 @@
 const { check } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation');
+const { handleValidationErrors, handleValidationCreatSpot } = require('../../utils/validation');
 
 
 
@@ -41,7 +41,8 @@ const validateCreatedSpots = [
     .exists({ checkFalsy: true})
     .notEmpty()
     .withMessage("Price per day is required"),
-  handleValidationErrors
+    handleValidationCreatSpot
+  // handleValidationErrors
 ]
 
 const validateBookings = [
