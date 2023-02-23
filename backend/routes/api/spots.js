@@ -10,6 +10,7 @@ const { Op } = require("sequelize");
 // This file includes all functions listed in order.
 // Get All Spots - with pagination and search feature
 // Get all Spots owned by the Current User
+// Get Details for a spot from an Id
 
 
 // Get All Spots
@@ -159,5 +160,49 @@ router.get('/current', requireAuth, async (req, res) => {
     }
     return res.json({ Spots: spotsArray });
 });
+
+
+// Get Details for a spot from an Id
+router.get('/:spotId', async (req, res) => {
+  const spot = await Spot.findByPk(req.params.spotId, {
+      include: [
+        {
+          model: User, as: 'Owner',
+          attributes: ['id', 'firstName', 'lastName']
+        },
+        {
+          model: SpotImage,
+          attributes: ['id', 'url', 'preview']
+        }
+      ]
+    });
+
+  if (!spot) {
+  return res
+      .status(404)
+      .json({
+          message: "Spot couldn't be found",
+          statusCode: res.statusCode
+      })
+  };
+
+  const reviewCount = await Review.count({ where: { spotId: spot.id } });
+
+  const starTotal = await Review.sum('stars', {
+  where: { spotId: spot.id }
+  });
+
+  const spotJSON = spot.toJSON();
+
+  if (!starTotal) {
+  spotJSON.avgStarRating = 0
+  } else {
+  spotJSON.avgStarRating = (starTotal / reviewCount).toFixed(1);
+  spotJSON.numReviews = reviewCount;
+  }
+  return res.json(spotJSON)
+});
+
+
 
 module.exports = router;
