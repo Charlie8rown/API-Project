@@ -9,7 +9,7 @@ const { handleValidationErrors } = require('../../utils/validation');
 // Get all Reviews of Current User
 // Create an Image for a Review   // Add an image to a review based on the review's id
 // Edit a Review
-// Delet a Review
+// Delete a Review
 
 
 
@@ -155,6 +155,32 @@ router.get('/current', requireAuth, async (req, res) => {
   return res.json({ Reviews: reviews });
 });
 
+
+
+// Delete a Review
+router.delete('/:reviewId', requireAuth, async(req, res, next) => {
+  try {
+    const review = await Review.findByPk(req.params.reviewId);
+
+    if (!review) {
+      return res.status(404).json({
+        message: "Review couldn't be fount"
+      })
+    }
+    if (review.userId !== req.user.id) {
+      return res.status(403).json({
+        message: "Authorization required"
+      })
+    }
+
+      await review.destroy();
+      req.status(200).json({
+        message: "Review deleted successfully"
+      })
+  } catch (err) {
+      next(err);
+  }
+});
 
 
 
