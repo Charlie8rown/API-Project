@@ -9,6 +9,7 @@ const { DATE } = require('sequelize');
 // This file includes all functions listed in order.
 // Get All Current User's Bookings
 // Edit a Booking
+// Delete a Booking
 
 
 
