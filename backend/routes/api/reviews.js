@@ -8,6 +8,8 @@ const { handleValidationErrors } = require('../../utils/validation');
 // This file includes all functions listed in order.
 // Get all Reviews of Current User
 // Create an Image for a Review   // Add an image to a review based on the review's id
+// Edit a Review
+// Delet a Review
 
 
 
@@ -97,6 +99,60 @@ router.post('/:reviewId/images', requireAuth, async (req, res) => {
     attributes:['id','url']
   });
   return res.json(result);
+});
+
+
+
+// Edit a Review
+router.get('/current', requireAuth, async (req, res) => {
+  const reviews = await Review.findAll({
+    where: {
+      userId: req.user.id
+    },
+    include: [
+      {
+        model: User,
+        attributes: ['id', 'firstName', 'lastName']
+      },
+      {
+        model: Spot,
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'description']
+        },
+        include: [
+          {
+            model: SpotImage,
+            where: { preview: true },
+            attributes: ['url']
+          }
+        ]
+      },
+      {
+        model: ReviewImage,
+        attributes: ['id', 'url']
+      }
+    ]
+  });
+
+  for (let i = 0; i < reviews.length; i++) {
+    let review = reviews[i].toJSON();
+
+    if (!review.Spot) {
+      review.Spot = { previewImage: 'None available!' };
+    } else {
+      let imageURL = review.Spot.SpotImages[0];
+
+      if (!imageURL) {
+        review.Spot.previewImage = 'None available!';
+      } else {
+        review.Spot.previewImage = imageURL.url;
+      }
+
+      delete review.Spot.SpotImages;
+    }
+    reviews[i] = review;
+  }
+  return res.json({ Reviews: reviews });
 });
 
 
