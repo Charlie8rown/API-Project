@@ -12,6 +12,11 @@ const { Op } = require("sequelize");
 // Get all Spots owned by the Current User
 // Get Details for a spot from an Id
 // Create a Spot
+// Add an Image to a Spot based on the Spot's id // Create an Image for a Spot
+// Edit a Spot
+// Delete a Spot
+
+
 
 
 // Get All Spots
@@ -230,6 +235,115 @@ router.post("/", requireAuth, validateCreatedSpots, async (req, res) => {
   }
 });
 
+
+// Add an Image to a Spot based on the Spot's id // Create an Image for a Spot
+router.post("/:spotId/images", requireAuth, async (req, res, next) => {
+  const { spotId } = req.params;
+  const { url, preview } = req.body;
+  try {
+    const spot = await Spot.findByPk(spotId);
+    if (!spot) {
+      const err = {};
+      err.title = "Spot couldn't be found";
+      err.status = 404;
+      err.errors = ["Spot couldn't be found"];
+      err.statusCode = 404;
+      return next(err);
+    }
+    if (req.user.id !== spot.ownerId) {
+      const err = {};
+      err.title = "Require proper authorization";
+      err.status = 403;
+      err.errors = {
+        message: "Forbidden",
+      };
+      err.statusCode = 403;
+      return next(err);
+    }
+    const img = await SpotImage.create({
+      spotId: spotId,
+      url,
+      preview,
+    });
+    return res.json({
+      id: img.id,
+      url: img.url,
+      preview: img.preview,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+// Edit a Spot
+router.put("/:spotId", requireAuth, validateCreatedSpots, async (req, res, next) => {
+  const id = req.user.id;
+  const { address, city, state, country, lat, lng, name, description, price } = req.body;
+  const spot = await Spot.findByPk(req.params.spotId);
+
+  if (!spot) {
+    const err = new Error("Spot Could NOT be found");
+    err.status = 404;
+    err.title = "Spot NOT valid";
+    err.errors = [
+      {
+        message: "Spot count Not be found. StatusCode: 404"
+      },
+    ];
+    return next(err);
+  };
+  if(id !== spot.ownerId){
+    const err = new Error("Forbidden");
+    err.status = 403;
+    err.title = "Require proper authorization";
+    err.errors = [
+      {
+        message: "Require proper authorization. statusCode: 403"
+      }
+    ]
+    return next(err);
+  };
+
+  spot.update({
+    address: address,
+    city: city,
+    state: state,
+    country: country,
+    lat: lat,
+    lng: lng,
+    name: name,
+    description: description,
+    price: price,
+  });
+  res.json(spot);
+});
+
+
+// Delete a Spot
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
+  try {
+    const id = req.params.spotId
+
+    const spot = await Spot.findByPk(id);
+    if (!spot) {
+      return res.status(404).json({
+        message: "Spot not found"
+      })
+    }
+    if (req.user.id !== spot.ownerId) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      })
+    }
+    await spot.destroy();
+    res.status(200).json({
+      message: "Successfully deleted"
+    })
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 module.exports = router;
