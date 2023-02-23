@@ -2,13 +2,11 @@ const express = require('express')
 const router = express.Router();
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { User, Review, SpotImage, Spot, ReviewImage, Booking } = require('../../db/models');
-const { check } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation');
-const { DATE } = require('sequelize');
 
 // This file includes all functions listed in order.
 // Get All Current User's Bookings
 // Edit a Booking
+// Delete a Booking
 
 
 

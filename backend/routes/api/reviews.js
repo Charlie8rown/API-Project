@@ -14,50 +14,95 @@ const { handleValidationErrors } = require('../../utils/validation');
 
 
 // Get all Reviews of Current User
-router.get('/current', requireAuth, async (req, res) => {
+// router.get('/current', requireAuth, async (req, res) => {
+//   const reviews = await Review.findAll({
+//     where: {
+//       userId: req.user.id
+//     },
+//     include: [
+//       {
+//         model: User,
+//         attributes: ['id', 'firstName', 'lastName']
+//       },
+//       {
+//         model: Spot,
+//         attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price']
+//       },
+//       {
+//         model: ReviewImage,
+//         attributes: ['id', 'url']
+//       }
+//     ]
+//   });
+//   for (let i = 0; i < reviews.length; i++) {
+//     console.log(reviews.Spot);
+//     let review = reviews[i].toJSON();
+//     if (!review.Spot) {
+//       review.Spot = { previewImage: 'None available!' };
+//     } else {
+//       if (!review.Spot.SpotImages) {
+//         review.Spot.previewImage = 'None available!';
+//       } else {
+//         let imageURL = review.Spot.SpotImages[0];
+
+//         if (!imageURL) {
+//           review.Spot.previewImage = 'None available!';
+//         } else {
+//           review.Spot.previewImage = imageURL.url;
+//         }
+
+//         delete review.Spot.SpotImages;
+//       }
+//     }
+//     reviews[i] = review;
+//   }
+//   return res.json({ Reviews: reviews });
+// });
+
+router.get('/current', requireAuth, async(req, res, next) => {
+  const id = req.user
   const reviews = await Review.findAll({
     where: {
-      userId: req.user.id
+      userId: id.id
     },
     include: [
       {
         model: User,
-        attributes: ['id', 'firstName', 'lastName']
+        attributes: ["id", "firstName", "lastName"]
       },
       {
         model: Spot,
-        attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price']
+        attributes: ["id", "ownerId", "address", "city", "state", "country", "lat", "lng", "name", "price"]
       },
       {
         model: ReviewImage,
-        attributes: ['id', 'url']
-      }
+        attributes: ["id", "url"]
+      },
     ]
+  })
+  const spots = await Spot.findAll({
+    include: {
+      model: SpotImage
+    }
+  })
+  let ele = []
+  spots.forEach(element => {
+    ele.push(element.toJSON())
   });
-  for (let i = 0; i < reviews.length; i++) {
-    console.log(reviews.Spot);
-    let review = reviews[i].toJSON();
-    if (!review.Spot) {
-      review.Spot = { previewImage: 'None available!' };
-    } else {
-      if (!review.Spot.SpotImages) {
-        review.Spot.previewImage = 'None available!';
-      } else {
-        let imageURL = review.Spot.SpotImages[0];
-
-        if (!imageURL) {
-          review.Spot.previewImage = 'None available!';
-        } else {
-          review.Spot.previewImage = imageURL.url;
-        }
-
-        delete review.Spot.SpotImages;
+  for (let i = 0; i < ele.length; i++) {
+    let spot = ele[i]
+    spot.SpotImages.forEach(img => {
+      if(img.preview === true) {
+        reviews.forEach(element => {
+          element.Spot.dataValues.previewImage = img.url
+        })
       }
     }
-    reviews[i] = review;
-  }
-  return res.json({ Reviews: reviews });
-});
+  )};
+  res.json({
+    Review: reviews
+  })
+})
 
 
 // Create an Image for a Review   // Add an image to a review based on the review's id
