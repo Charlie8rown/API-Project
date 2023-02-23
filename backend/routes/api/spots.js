@@ -17,6 +17,7 @@ const { Op } = require("sequelize");
 // Delete a Spot
 // Get all reviews by a spot's id
 // Get All Bookings for a Spot based on the spot's Id
+// Create a Booking from a Spot based on the spot's id
 
 
 
@@ -489,6 +490,68 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+});
+
+
+// Create a Booking from a Spot based on the spot's id
+router.post('/:spotId/bookings', requireAuth, async (req, res) =>{
+  const spot = await Spot.findByPk(req.params.spotId);
+
+  if (!spot) {
+    return res
+    .status(404)
+    .json({
+      message: "Spot couldn't be found",
+      statusCode: res.statusCode
+    });
+  };
+
+  const { startDate, endDate } = req.body;
+  const reqStartDate = new Date(startDate).getTime()
+  const reqEndDate = new Date(endDate).getTime()
+
+  if (reqStartDate >= reqEndDate) {
+    return res
+    .status(400)
+    .json({
+      message: 'Validation Error',
+      statusCode: res.statusCode,
+      errors: [{
+        endDate: 'endDate cannot be on or before startDate'
+      }]
+    })
+  };
+
+  const bookings = await Booking.findAll({
+    where: {
+      spotId: spot.id
+    }
+  });
+
+  for (let i = 0; i < bookings.length; i++) {
+    let oldStartDate = new Date(bookings[i].startDate).getTime();
+    let oldEndDate = new Date(bookings[i].endDate).getTime();
+
+    if (oldStartDate >= reqStartDate && oldEndDate <= reqEndDate|| oldStartDate <= reqStartDate && oldEndDate >= reqEndDate) {
+      return res
+      .status(403)
+      .json({
+        message: 'Sorry, this spot is already booked for the specified dates',
+        statusCode: res.statusCode,
+        errors: [{
+          startDate: 'Start date conflicts with an already existing booking',
+          endDate: 'End date conflicts with an already existing booking'
+        }]
+      })
+    }
+  };
+  const booking = await Booking.create({
+    spotId: req.params.spotId,
+    userId: req.user.id,
+    startDate,
+    endDate
+  });
+  return res.json(booking);
 });
 
 

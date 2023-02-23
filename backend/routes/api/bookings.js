@@ -8,7 +8,7 @@ const { DATE } = require('sequelize');
 
 // This file includes all functions listed in order.
 // Get All Current User's Bookings
-
+// Edit a Booking
 
 
 
@@ -65,6 +65,69 @@ router.get('/current', requireAuth, async(req, res, next) => {
     res.json({ Bookings: bookingsJSON });
 });
 
+
+
+// Edit a Booking
+router.put('/:bookingId', requireAuth, async (req, res) => {
+  const booking = await Booking.findByPk(req.params.bookingId);
+
+  if (!booking) {
+    return res
+      .status(404)
+      .json({
+        message: "Booking couldn't be found",
+        statusCode: res.statusCode
+      });
+  };
+
+    const { startDate, endDate } = req.body;
+    const reqStartDate = new Date(startDate).getTime();
+    const reqEndDate = new Date(endDate).getTime();
+    const oldStartDate = new Date(booking.startDate).getTime();
+    const oldEndDate = new Date(booking.endDate).getTime();
+    const currentDate = new Date().getTime();
+
+    if (reqEndDate <= reqStartDate) {
+      return res
+        .status(400)
+        .json({
+          message: 'Validation Error',
+          statusCode: res.statusCode,
+          errors: [{
+            endDate: 'endDate cannot come before startDate'
+          }]
+        });
+    };
+
+    if (reqEndDate < currentDate) {
+      return res
+        .status(403)
+        .json({
+          message: "Past bookings can't be modified",
+          statusCode: res.statusCode
+        });
+    };
+
+    if (oldStartDate >= reqStartDate && oldEndDate <= reqEndDate
+      || oldStartDate <= reqStartDate && oldEndDate >= reqEndDate) {
+      return res
+        .status(403)
+        .json({
+          message: "Sorry, this spot is already booked for the specified dates",
+          statusCode: res.statusCode,
+          errors: [{
+            "startDate": "Start date conflicts with an existing booking",
+            "endDate": "End date conflicts with an existing booking"
+          }]
+        });
+    };
+
+    booking.startDate = startDate;
+    booking.endDate = endDate;
+    booking.save();
+
+    return res.json(booking);
+  });
 
 
 module.exports = router;
