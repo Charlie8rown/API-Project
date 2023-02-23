@@ -15,6 +15,7 @@ const { Op } = require("sequelize");
 // Add an Image to a Spot based on the Spot's id // Create an Image for a Spot
 // Edit a Spot
 // Delete a Spot
+// Get all reviews by a spot's id
 
 
 
@@ -344,6 +345,101 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
+
+
+// Get all reviews by a spot's id
+router.get('/:spotId/reviews', async (req,res, next)=> {
+  const { spotId } = req.params
+
+  const spot = await Spot.findByPk(spotId)
+  if(!spot) {
+    const err = {}
+    err.title = "Spot couldn't be found"
+    err.status = 404;
+    err.errors = ["Spot couldn't be found"]
+    err.statusCode = 404
+    return next(err)
+  }
+
+  const reviews = await Review.findAll({
+    where: {
+      spotId: spotId
+    },
+    include: [
+      {
+        model: User,
+        attributes: ["id", "firstName", "lastName"],
+        as: "User"
+      },
+      {
+        model: ReviewImage,
+        attributes: ["id", "url"]
+      }
+    ]
+  })
+
+  res.json({
+    Review: reviews
+  })
+})
+
+
+// Create a Review for a Spot based on the Spot's id
+router.post(
+  "/:spotId/reviews",
+  requireAuth,
+  reviewValidateError,
+  async (req, res, next) => {
+    try {
+      const { spotId } = req.params;
+      const userId = req.user.id;
+      const { review, stars } = req.body;
+
+      const spot = await Spot.findByPk(spotId);
+      if (!spot) {
+        return next({
+          title: "Spot couldn't be found",
+          status: 404,
+          errors: ["Spot couldn't be found"],
+          statusCode: 404,
+        });
+      }
+
+      if (!parseFloat(stars) || stars < 1 || stars > 5) {
+        return next({
+          title: "Validation error",
+          status: 400,
+          errors: [{ message: "Stars must be an integer from 1 to 5" }],
+        });
+      }
+
+      const existingReview = await Review.findOne({
+        where: { userId, spotId },
+      });
+      if (existingReview) {
+        return next({
+          title: "User already has a review for this spot",
+          status: 403,
+          errors: ["User already has a review for this spot"],
+          statusCode: 403,
+        });
+      }
+
+      const newReview = await Review.create({
+        userId,
+        spotId: parseInt(spotId),
+        review,
+        stars,
+      });
+
+      res.status(201).json(newReview);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 
 
 module.exports = router;
