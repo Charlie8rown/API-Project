@@ -5,6 +5,10 @@ const { User, Review, SpotImage, Spot, ReviewImage, Booking } = require('../../d
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
+// This file includes all functions listed in order.
+// Get all Reviews of Current User
+// Create an Image for a Review   // Add an image to a review based on the review's id
+
 
 
 // Get all Reviews of Current User
@@ -53,6 +57,47 @@ router.get('/current', requireAuth, async (req, res) => {
   return res.json({ Reviews: reviews });
 });
 
+
+// Create an Image for a Review   // Add an image to a review based on the review's id
+router.post('/:reviewId/images', requireAuth, async (req, res) => {
+  const review = await Review.findByPk(req.params.reviewId);
+
+  if (!review) {
+    return res
+      .status(404)
+      .json({
+        message: "Review couldn't be found",
+        statusCode: res.statusCode
+      });
+  };
+  const { url } = req.body;
+  const images = await ReviewImage.findAll({
+    where: {
+      reviewId: req.params.reviewId
+    }
+  });
+
+  if (images.length > 9) {
+    return res
+      .status(403)
+      .json({
+        message: "Maximum number of images for this resource was reached",
+        statusCode: res.statusCode
+      });
+  };
+
+  const image = await ReviewImage.create({
+    reviewId: req.params.reviewId,
+    url
+  });
+  const result  = await ReviewImage.findOne({
+    where: {
+      url:url
+    },
+    attributes:['id','url']
+  });
+  return res.json(result);
+});
 
 
 
