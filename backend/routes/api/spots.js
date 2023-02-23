@@ -9,7 +9,7 @@ const { Op } = require("sequelize");
 
 // This file includes all functions listed in order.
 // Get All Spots - with pagination and search feature
-
+// Get all Spots owned by the Current User
 
 
 // Get All Spots
@@ -118,5 +118,46 @@ router.get("/", validateQueryError, async (req, res, next) => {
   });
 });
 
+
+// Get all Spots owned by the Current User
+router.get('/current', requireAuth, async (req, res) => {
+  const spots = await Spot.findAll({
+      where: {
+        ownerId: req.user.id
+      }
+  });
+
+  const spotsArray = [];
+
+  for (let i = 0; i < spots.length; i++) {
+      let currentSpot = spots[i].toJSON();
+      const starTotal = await Review.sum('stars', { where: { spotId: currentSpot.id } });
+      const reviewTotal = await Review.count({ where: { spotId: currentSpot.id } });
+
+      if (!starTotal) {
+        currentSpot.avgRating = 0;
+      } else {
+        currentSpot.avgRating = (starTotal / reviewTotal).toFixed(1);
+      }
+
+      const image = await SpotImage.findOne({
+        where: {
+          [Op.and]: [
+            { spotId: currentSpot.id },
+            { preview: true }
+          ]
+        }
+      });
+
+      if (!image) {
+        currentSpot.previewImage = 'No images!'
+      } else {
+        currentSpot.previewImage = image.url
+      }
+
+      spotsArray.push(currentSpot);
+    }
+    return res.json({ Spots: spotsArray });
+});
 
 module.exports = router;
