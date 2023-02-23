@@ -402,7 +402,7 @@ router.post(
         return next({
           title: "Spot couldn't be found",
           status: 404,
-          errors: ["Spot couldn't be found"],
+          message: "Spot couldn't be found",
           statusCode: 404,
         });
       }
@@ -422,7 +422,7 @@ router.post(
         return next({
           title: "User already has a review for this spot",
           status: 403,
-          errors: ["User already has a review for this spot"],
+          message: "User already has a review for this spot",
           statusCode: 403,
         });
       }
