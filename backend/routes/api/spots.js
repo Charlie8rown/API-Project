@@ -9,7 +9,9 @@ const { Op } = require("sequelize");
 
 // This file includes all functions listed in order.
 // Get All Spots - with pagination and search feature
-
+// Get all Spots owned by the Current User
+// Get Details for a spot from an Id
+// Create a Spot
 
 
 // Get All Spots
@@ -117,6 +119,117 @@ router.get("/", validateQueryError, async (req, res, next) => {
     size,
   });
 });
+
+
+// Get all Spots owned by the Current User
+router.get('/current', requireAuth, async (req, res) => {
+  const spots = await Spot.findAll({
+      where: {
+        ownerId: req.user.id
+      }
+  });
+
+  const spotsArray = [];
+
+  for (let i = 0; i < spots.length; i++) {
+      let currentSpot = spots[i].toJSON();
+      const starTotal = await Review.sum('stars', { where: { spotId: currentSpot.id } });
+      const reviewTotal = await Review.count({ where: { spotId: currentSpot.id } });
+
+      if (!starTotal) {
+        currentSpot.avgRating = 0;
+      } else {
+        currentSpot.avgRating = (starTotal / reviewTotal).toFixed(1);
+      }
+
+      const image = await SpotImage.findOne({
+        where: {
+          [Op.and]: [
+            { spotId: currentSpot.id },
+            { preview: true }
+          ]
+        }
+      });
+
+      if (!image) {
+        currentSpot.previewImage = 'No images!'
+      } else {
+        currentSpot.previewImage = image.url
+      }
+
+      spotsArray.push(currentSpot);
+    }
+    return res.json({ Spots: spotsArray });
+});
+
+
+// Get Details for a spot from an Id
+router.get('/:spotId', async (req, res) => {
+  const spot = await Spot.findByPk(req.params.spotId, {
+      include: [
+        {
+          model: User, as: 'Owner',
+          attributes: ['id', 'firstName', 'lastName']
+        },
+        {
+          model: SpotImage,
+          attributes: ['id', 'url', 'preview']
+        }
+      ]
+    });
+
+  if (!spot) {
+  return res
+      .status(404)
+      .json({
+          message: "Spot couldn't be found",
+          statusCode: res.statusCode
+      })
+  };
+
+  const reviewCount = await Review.count({ where: { spotId: spot.id } });
+
+  const starTotal = await Review.sum('stars', {
+  where: { spotId: spot.id }
+  });
+
+  const spotJSON = spot.toJSON();
+
+  if (!starTotal) {
+  spotJSON.avgStarRating = 0
+  } else {
+  spotJSON.avgStarRating = (starTotal / reviewCount).toFixed(1);
+  spotJSON.numReviews = reviewCount;
+  }
+  return res.json(spotJSON)
+});
+
+
+// Create a Spot
+router.post("/", requireAuth, validateCreatedSpots, async (req, res) => {
+  const id = req.user.id;
+  const { address, city, state, country, lat, lng, name, description, price } =
+    req.body;
+
+  const createdSpot = await Spot.create({
+    ownerId: id,
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price,
+  });
+
+  if (createdSpot) {
+    res.status(201);
+    res.json(createdSpot);
+  }
+});
+
 
 
 module.exports = router;
