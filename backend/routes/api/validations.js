@@ -65,7 +65,6 @@ const validateQueryError = [
     .exists({ checkFalsy: true })
     .isInt({ min: 1 })
     .withMessage("Size must be greater than or equal to 1"),
-  handleValidationErrors
 ]
 
 const reviewValidateError = [
