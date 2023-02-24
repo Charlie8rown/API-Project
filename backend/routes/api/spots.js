@@ -96,30 +96,40 @@ router.get("/", validateQueryError, async (req, res, next) => {
         raw: true,
       },
     });
-    spot.SpotImages.forEach((img) => {
-      if (img.preview === true) {
-        spot.previewImage = img.url;
-      }
-    });
-    if (!spot.previewImage) {
-      spot.previewImage = "null";
-    }
+
     let countRating = 0;
+
     spot.Reviews.forEach((element) => {
       countRating += element.stars;
     });
+
     let average = countRating / reviews.length;
+
     if (!spots.previewImage) {
       spots.previewImage = "No image found";
     } else {
       spot.avgRating = average;
     }
+
     if (!spot.avgRating) {
       spot.avgRating = "No reviews are found";
     }
+
+    spot.SpotImages.forEach((img) => {
+
+      if (img.preview === true) {
+        spot.previewImage = img.url;
+      }
+    });
+
+    if (!spot.previewImage) {
+      spot.previewImage = "null";
+    }
+
     delete spot.SpotImages;
     delete spot.Reviews;
   }
+
   res.json({
     Spots: arr,
     page,
@@ -171,45 +181,105 @@ router.get('/current', requireAuth, async (req, res) => {
 
 
 // Get Details for a spot from an Id
-router.get('/:spotId', async (req, res) => {
-  const spot = await Spot.findByPk(req.params.spotId, {
-      include: [
-        {
-          model: User, as: 'Owner',
-          attributes: ['id', 'firstName', 'lastName']
-        },
-        {
-          model: SpotImage,
-          attributes: ['id', 'url', 'preview']
-        }
-      ]
-    });
+// router.get('/:spotId', async (req, res) => {
+//   const spot = await Spot.findByPk(req.params.spotId, {
+//       include: [
+//         {
+//           model: User, as: 'Owner',
+//           attributes: ['id', 'firstName', 'lastName']
+//         },
+//         {
+//           model: SpotImage,
+//           attributes: ['id', 'url', 'preview']
+//         }
+//       ]
+//     });
 
-  if (!spot) {
-  return res
-      .status(404)
-      .json({
-          message: "Spot couldn't be found",
-          statusCode: res.statusCode
-      })
-  };
+//   if (!spot) {
+//   return res
+//       .status(404)
+//       .json({
+//           message: "Spot couldn't be found",
+//           statusCode: res.statusCode
+//       })
+//   };
 
-  const reviewCount = await Review.count({ where: { spotId: spot.id } });
+//   const reviewCount = await Review.count({ where: { spotId: spot.id } });
 
-  const starTotal = await Review.sum('stars', {
-  where: { spotId: spot.id }
+//   const starTotal = await Review.sum('stars', {
+//   where: { spotId: spot.id }
+//   });
+
+//   const spotJSON = spot.toJSON();
+
+//   if (!starTotal) {
+//   spotJSON.avgStarRating = 0
+//   } else {
+//   spotJSON.avgStarRating = (starTotal / reviewCount).toFixed(1);
+//   spotJSON.numReviews = reviewCount;
+//   }
+
+//   return res.json(spotJSON)
+// });
+
+
+router.get('/:spotId', async (req, res, next) => {
+
+  let { spotId } = req.params;
+
+  let allSpots = await Spot.findByPk(spotId);
+
+  if (!allSpots) {
+    return res
+    .status(404)
+    .json({
+      message: "Spot couldn't be found",
+      statusCode: res.statusCode
+    })
+  }
+
+    allSpots = allSpots.toJSON();
+
+  let count = await Review.count({
+    where: {
+      spotId: spotId
+    }
   });
 
-  const spotJSON = spot.toJSON();
+  allSpots.numReviews = count;
 
-  if (!starTotal) {
-  spotJSON.avgStarRating = 0
+  let sum = await Review.sum('stars', {
+    where: {
+      spotId: spotId
+    }
+  });
+
+  if (sum / count) {
+    allSpots.avgStarRating = sum / count;
   } else {
-  spotJSON.avgStarRating = (starTotal / reviewCount).toFixed(1);
-  spotJSON.numReviews = reviewCount;
-  }
-  return res.json(spotJSON)
-});
+    allSpots.avgStarRating = "No current ratings";
+  };
+
+  let spotImages = await SpotImage.findAll({
+    where: {
+      spotId: spotId
+    },
+    attributes: ['id', 'url', 'preview']
+  });
+
+  if (spotImages.length > 0) {
+    allSpots.SpotImages = spotImages;
+  } else {
+    allSpots.SpotImages = "There are no images for this spot"
+  };
+
+
+  allSpots.Owner = await User.findByPk(allSpots.ownerId, {
+    attributes: ['id', 'firstName', 'lastName']
+  });
+
+  return res.json(allSpots);
+})
 
 
 // Create a Spot
