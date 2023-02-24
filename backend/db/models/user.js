@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     toSafeObject() {
       const { id, username, email, firstName, lastName } = this; // context will be the User instance
-      return { id, username, email, firstName, lastName };
+      return { id, firstName, lastName, email, username };
     }
 
     validatePassword(password) {
@@ -87,6 +87,14 @@ module.exports = (sequelize, DataTypes) => {
           len: [1, 25]
         }
       },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: [3, 256],
+          isEmail: true
+        }
+      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -97,14 +105,6 @@ module.exports = (sequelize, DataTypes) => {
               throw new Error("Cannot be an email.");
             }
           }
-        }
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          len: [3, 256],
-          isEmail: true
         }
       },
       hashedPassword: {
