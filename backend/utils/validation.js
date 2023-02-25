@@ -41,7 +41,6 @@ const handleValidationCreatSpot = (req, _res, next) => {
   next();
 };
 
-
 module.exports = {
   handleValidationErrors,
   handleValidationCreatSpot
