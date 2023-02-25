@@ -318,7 +318,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
       const err = {};
       err.title = "Spot couldn't be found";
       err.status = 404;
-      err.errors = ["Spot couldn't be found"];
+      err.message = "Spot couldn't be found";
       err.statusCode = 404;
       return next(err);
     }
@@ -326,9 +326,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
       const err = {};
       err.title = "Require proper authorization";
       err.status = 403;
-      err.errors = {
-        message: "Forbidden",
-      };
+      err.message = "Require proper authorization";
       err.statusCode = 403;
       return next(err);
     }
@@ -358,22 +356,14 @@ router.put("/:spotId", requireAuth, validateCreatedSpots, async (req, res, next)
     const err = new Error("Spot Could NOT be found");
     err.status = 404;
     err.title = "Spot NOT valid";
-    err.errors = [
-      {
-        message: "Spot count Not be found. StatusCode: 404"
-      },
-    ];
+    err.message = "Spot count Not be found.";
     return next(err);
   };
   if(id !== spot.ownerId){
-    const err = new Error("Forbidden");
+    const err = new Error("Require proper authorization");
     err.status = 403;
     err.title = "Require proper authorization";
-    err.errors = [
-      {
-        message: "Require proper authorization. statusCode: 403"
-      }
-    ]
+    err.message = "Require proper authorization.";
     return next(err);
   };
 
@@ -399,18 +389,23 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 
     const spot = await Spot.findByPk(id);
     if (!spot) {
-      return res.status(404).json({
-        message: "Spot not found"
-      })
+      const err = new Error("Spot couldn't be found");
+      err.status = 404;
+      err.title = "Spot couldn't be found";
+      err.message = "Spot couldn't be found";
+      return next(err);
     }
     if (req.user.id !== spot.ownerId) {
-      return res.status(401).json({
-        message: "Unauthorized"
-      })
+      const err = new Error("Require proper authorization");
+      err.status = 403;
+      err.title = "Require proper authorization";
+      err.message = "Require proper authorization.";
+      return next(err);
     }
     await spot.destroy();
     res.status(200).json({
-      message: "Successfully deleted"
+      message: "Successfully deleted",
+      statusCode: 200
     })
   } catch (error) {
     next(error);
@@ -428,7 +423,7 @@ router.get('/:spotId/reviews', async (req,res, next)=> {
     const err = {}
     err.title = "Spot couldn't be found"
     err.status = 404;
-    err.errors = ["Spot couldn't be found"]
+    err.message = "Spot couldn't be found"
     err.statusCode = 404
     return next(err)
   }
@@ -450,8 +445,24 @@ router.get('/:spotId/reviews', async (req,res, next)=> {
     ]
   })
 
+
+  if (!reviews.length) {
+    return res.json("There are no reviews for this specified spot")
+  };
+
+let reviewsResults = [];
+reviews.forEach(review => {
+    let matchedReview = review.toJSON();
+    console.log(matchedReview.ReviewImages);
+    if (!matchedReview.ReviewImages.length > 0) {
+      matchedReview.ReviewImages = "No review images were included for this review"
+    }
+
+    reviewsResults.push(matchedReview);
+  });
+
   res.json({
-    Review: reviews
+    Review: reviewsResults
   })
 })
 
@@ -556,6 +567,9 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
         attributes: ["spotId", "startDate", "endDate"],
       });
     }
+    if (bookings.length === 0) {
+      return res.json({ bookings: "There are currently no bookings."})
+    }
     return res.json({ bookings });
   } catch (error) {
     return next(error);
@@ -564,7 +578,7 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
 
 
 // Create a Booking from a Spot based on the spot's id
-router.post('/:spotId/bookings', requireAuth, async (req, res) =>{
+router.post('/:spotId/bookings', requireAuth, async (req, res, next) =>{
   const spot = await Spot.findByPk(req.params.spotId);
 
   if (!spot) {
@@ -576,20 +590,47 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) =>{
     });
   };
 
+
   const { startDate, endDate } = req.body;
+
+  // if(!startDate) {
+  //   const err = new Error("Invalid start date")
+  //   err.status = 400
+  //   err.title = "Invalid start date"
+  //   err.message = "Invalid start date"
+  //   err.statusCode = 400
+  //   return next(err)
+  // }
+  // if(!endDate) {
+  //   const err = new Error("Invalid end date")
+  //   err.status = 400
+  //   err.title = "Invalid end date"
+  //   err.message = "Invalid end date"
+  //   err.statusCode = 400
+  //   return next(err)
+  // }
+
+  if(!startDate || !endDate) {
+    const err = new Error("Invalid start or end date")
+    err.status = 400
+    err.title = "Invalid date range"
+    err.message = "Validation error"
+    err.errors = { "Invalid Input": "Invalide start and/or end date"}
+    err.statusCode = 400
+    return next(err)
+  }
+
   const reqStartDate = new Date(startDate).getTime()
   const reqEndDate = new Date(endDate).getTime()
 
   if (reqStartDate >= reqEndDate) {
-    return res
-    .status(400)
-    .json({
-      message: 'Validation Error',
-      statusCode: res.statusCode,
-      errors: [{
-        endDate: 'endDate cannot be on or before startDate'
-      }]
-    })
+    const err = new Error('Validation Error')
+    err.status = 400
+    err.title = 'Validation Error'
+    err.message = 'Validation Error'
+    err.errors = { "endDate": "endDate cannot be on or before startDate"}
+    err.statusCode = 400
+    return next(err)
   };
 
   const bookings = await Booking.findAll({

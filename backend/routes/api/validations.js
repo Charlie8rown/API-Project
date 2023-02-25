@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const { handleValidationErrors, handleValidationCreatSpot } = require('../../utils/validation');
+const { Review, User } = require('../../db/models')
 
 
 
@@ -78,10 +79,57 @@ const reviewValidateError = [
     .withMessage('Review text is required'),
   check('stars')
     .exists({ checkFalsy: true })
+    .isInt({ min: 1, max: 5 })
     .withMessage('Stars must be an integer from 1 to 5'),
     handleValidationCreatSpot
   // handleValidationErrors
 ]
 
+const ValidateReviewImage = [
+  check('url')
+    .notEmpty()
+    .withMessage('Must provide image url'),
+  handleValidationErrors
+];
 
-module.exports = { validateCreatedSpots,  validateBookings, validateQueryError, reviewValidateError};
+
+const validateReviewExist = async (req, res, next) => {
+  const { reviewId } = req.params;
+  const reviews = await Review.findByPk(reviewId)
+
+  if(!reviews) {
+    const err = new Error("Review couldn't be found")
+    err.title = "Review couldn't be found"
+    err.status = 404;
+    err.message = "Review couldn't be found"
+    err.statusCode = 404
+    return next(err)
+  }
+  return next()
+}
+
+const validateReviewByUser = async (req, res, next) => {
+  const { reviewId } = req.params;
+  const reviews = await Review.findByPk(reviewId)
+  const user = req.user
+
+  if (user.id !== reviews.userId) {
+    const err = new Error("Authorization required")
+    err.title = "Authorization required"
+    err.status = 403
+    err.message = "Authorization required"
+    err.statusCode = 403
+    return next(err)
+  }
+  return next()
+}
+
+module.exports = {
+  validateCreatedSpots,
+  validateBookings,
+  validateQueryError,
+  reviewValidateError,
+  ValidateReviewImage,
+  validateReviewExist,
+  validateReviewByUser
+};

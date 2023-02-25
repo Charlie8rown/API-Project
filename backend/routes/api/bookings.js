@@ -12,61 +12,54 @@ const { User, Review, SpotImage, Spot, ReviewImage, Booking } = require('../../d
 
 // Get All Current User's Bookings
 router.get('/current', requireAuth, async(req, res, next) => {
-  const userId  = req.user.id
+  const currUser  = req.user
+  // console.log(currUser);
+  const bookings = await currUser.getBookings({
 
-  const bookings = await Booking.findAll({
-    where: {
-      userId: userId
-    },
-    include: {
+    include: [{
       model: Spot,
-      attributes: [
-        "id", "ownerId", "address", "city", "state", "country", "lat", "lng", "name", "price"
-      ]
-    },
-    attributes: ["id", "spotId", "userId", "startDate", "endDate", "createdAt", "updatedAt"]
+      attributes: ["id", "ownerId", "address", "city", "state", "country", "lat", "lng", "name", "price"],
+      include: [{
+        model: SpotImage,
+        attributes: ["url", "preview"]
+      }]
+    }]
   });
 
-  const spots = await Spot.findAll({
-    include: {
-      model: SpotImage,
-      // where: { preview: true },
-      // attributes: ['url']
-    },
-  });
+  if(bookings.length === 0) {
+    return res.json({ message: "No booking for current user" })
+  }
 
-  let ele = []
+  const bookingslist = [];
 
-  spots.forEach(element => {
-    ele.push(element.toJSON())
-  });
+  for (let i = 0; i < bookings.length; i++) {
+    let currBooking = bookings[i];
+    let currBookingJSON = currBooking.toJSON();
 
-  bookings.forEach(booking => {
-    console.log(booking.dataValues.startDate)
-    let spot = spots.find(sp => sp.id === booking.spotId);
-    booking.Spot.dataValues.previewImage = spot?.SpotImages[0]?.url;
-  });
+    if (currBookingJSON.Spot.SpotImages.length > 0) {
+      for (let j = 0; j < currBookingJSON.length > 0; j++)  {
 
-  const bookingsJSON = bookings.map(booking => {
-    const bookingJSON = booking.toJSON();
-
-    if (bookingJSON.startDate) {
-      bookingJSON.startDate = bookingJSON.startDate.toLocaleString();
+        if (currBookingJSON.Spot.SpotImages[i].preview === true) {
+          currBookingJSON.Spot.previewImage = currBookingJSON.Spot.SpotImages[i].url
+        }
+      }
     }
-
-    if (bookingJSON.endDate) {
-      bookingJSON.endDate = bookingJSON.endDate.toLocaleString();
+    if (!currBookingJSON.Spot.previewImage) {
+      currBookingJSON.Spot.previewImage = null
     }
-    return bookingJSON;
-  });
+    delete currBookingJSON.Spot.SpotImages;
+    currBookingJSON.startDate = currBookingJSON.startDate.split(" ")[0]
+    currBookingJSON.endDate = currBookingJSON.endDate.split(" ")[0]
+    bookingslist.push(currBookingJSON)
+  }
 
-  res.json({ Bookings: bookingsJSON });
+  res.json({ Bookings: bookingslist });
 });
 
 
 
 // Edit a Booking
-router.put('/:bookingId', requireAuth, async (req, res) => {
+router.put('/:bookingId', requireAuth, async (req, res, next) => {
   const booking = await Booking.findByPk(req.params.bookingId);
 
   if (!booking) {
@@ -86,37 +79,34 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
   const currentDate = new Date().getTime();
 
   if (reqEndDate <= reqStartDate) {
+    const err = new Error("Validation Error")
+    err.status = 400
+    err.title = "Validation Error"
+    err.message = "Validation Error"
+    err.statusCode = 400
+    err.errors = { endDate: "endDate cannot come before startDate" }
+    return next(err)
     return res
-    .status(400)
-    .json({
-      message: 'Validation Error',
-      statusCode: res.statusCode,
-      errors: [{
-        endDate: 'endDate cannot come before startDate'
-      }]
-    });
+
   };
 
   if (reqEndDate < currentDate) {
-    return res
-    .status(403)
-    .json({
-      message: "Past bookings can't be modified",
-      statusCode: res.statusCode
-    });
+    const err = new Error("Past bookings can't be modified")
+    err.status = 403
+    err.title = "Past bookings can't be modified"
+    err.message = "Past bookings can't be modified"
+    err.statusCode = 403
+    return next(err)
   };
 
   if (oldStartDate >= reqStartDate && oldEndDate <= reqEndDate || oldStartDate <= reqStartDate && oldEndDate >= reqEndDate) {
-    return res
-    .status(403)
-    .json({
-      message: "Sorry, this spot is already booked for the specified dates",
-      statusCode: res.statusCode,
-      errors: [{
-        "startDate": "Start date conflicts with an existing booking",
-        "endDate": "End date conflicts with an existing booking"
-      }]
-    });
+    const err = new Error("Sorry, this spot is already booked for the specified dates")
+    err.status = 403
+    err.title =
+    err.message = "Sorry, this spot is already booked for the specified dates"
+    err.statusCode = 403
+    err.errors = { startDate: "Start date conflicts with an existing booking", endDate: "End date conflicts with an existing booking" }
+    return next(err)
   };
 
   booking.startDate = startDate;
@@ -136,24 +126,26 @@ router.delete("/:bookingId", requireAuth, async (req, res, next) => {
   const newStartDate = new Date().toISOString().slice(0, 10)
 
   if(!bookings){
-    return res.status(404).json({
-      "message": "Booking Couldn't be found",
-      "statusCode": 404
-    })
+    const err = new Error("Booking Couldn't be found");
+      err.status = 404;
+      err.title = "Booking Couldn't be found";
+      err.message = "Booking Couldn't be found";
+      return next(err);
   }
 
   if(bookings.dataValues.startDate <= newStartDate){
-    return res.status(403).json({
-      "message": "Bookings that have been started can't be deleted",
-      "statusCode": 403
-    })
+    const err = new Error("Bookings that have been started can't be deleted")
+      err.status = 403
+      err.title = "Bookings that have been started can't be deleted"
+      err.message = "Bookings that have been started can't be deleted"
   }
 
   if(userId !== bookings.userId){
-    return res.status(403).json({
-      "message": "Forbidden",
-      "statusCode": 403
-    })
+    const err = new Error("Require proper authorization");
+      err.status = 403;
+      err.title = "Require proper authorization";
+      err.message = "Require proper authorization.";
+      return next(err);
   }
   await bookings.destroy()
 
