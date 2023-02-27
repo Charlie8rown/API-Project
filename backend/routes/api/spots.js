@@ -530,7 +530,14 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
     const { spotId } = req.params;
     const spot = await Spot.findByPk(spotId);
 
-    if (!spot) return next(createError(404, "Spot couldn't be found"));
+    if (!spot) {
+      const err = new Error("Spot couldn't be found")
+      err.status = 404
+      err.title = "Spot couldn't be found"
+      err.message = "Spot couldn't be found"
+      err.statusCode = 404
+      return next(err)
+    }
 
     let bookings;
     const include = [
@@ -568,6 +575,7 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
       });
     }
     if (bookings.length === 0) {
+
       return res.json({ bookings: "There are currently no bookings."})
     }
     return res.json({ bookings });
@@ -582,12 +590,12 @@ router.post('/:spotId/bookings', requireAuth, async (req, res, next) =>{
   const spot = await Spot.findByPk(req.params.spotId);
 
   if (!spot) {
-    return res
-    .status(404)
-    .json({
-      message: "Spot couldn't be found",
-      statusCode: res.statusCode
-    });
+    const err = new Error("Spot couldn't be found")
+    err.status = 404
+    err.title = "Spot couldn't be found"
+    err.message = "Spot couldn't be found"
+    err.statusCode = 404
+    return next(err)
   };
 
 
