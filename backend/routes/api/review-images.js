@@ -6,30 +6,31 @@ const { User, Review, SpotImage, Spot, ReviewImage, Booking } = require('../../d
 
 
 // Delete a Review Image
-router.delete("/:imageId", requireAuth, async (req, res) => {
+router.delete("/:imageId", requireAuth, async (req, res, next) => {
   const { imageId } = req.params;
-  const reviewImageId = req.user.id;
   const reviewImage = await ReviewImage.findByPk(imageId);
   const allReviews = await Review.findAll();
 
-
   if(!reviewImage){
-    return res.status(404).json({
-      "message": "Review Image couldn't be found",
-      "statusCode": 404
-    })
+    const err = new Error("Review Image couldn't be found")
+    err.status = 404
+    err.title = "Review Image couldn't be found"
+    err.message = "Review Image couldn't be found"
+    err.statusCode = 404
+    return next(err)
   }
 
-  let userId;
-  allReviews.forEach(review => {
-    userId = review.userId;
-  })
+  const user = req.user
+  const review = await reviewImage.getReview()
 
-  if(reviewImageId !== userId){
-    return res.status(403).json({
-      "message": "Authorization Error",
-      "statusCode": 403
-    })
+
+  if(review.userId !== user.id){
+    const err = new Error("Authorization Error")
+    err.status = 403
+    err.title = "Authorization Error"
+    err.message = "Authorization Error"
+    err.statusCode = 403
+    return next(err)
   }
   await reviewImage.destroy()
 
