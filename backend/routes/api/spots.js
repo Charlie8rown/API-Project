@@ -139,7 +139,7 @@ router.get("/", validateQueryError, async (req, res, next) => {
 
 
 // Get all Spots owned by the Current User
-router.get('/current', requireAuth, async (req, res) => {
+router.get('/current', requireAuth, async (req, res, next) => {
   const spots = await Spot.findAll({
       where: {
         ownerId: req.user.id
@@ -175,6 +175,13 @@ router.get('/current', requireAuth, async (req, res) => {
       }
 
       spotsArray.push(currentSpot);
+    }
+    if (!spotsArray.length){
+      const err = new Error("User has no spot")
+      err.title = "User has no spot"
+      // err.status = 200
+      err.message = "User has no spots"
+      return next(err)
     }
     return res.json({ Spots: spotsArray });
 });
