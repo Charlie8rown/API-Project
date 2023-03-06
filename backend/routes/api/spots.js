@@ -188,48 +188,6 @@ router.get('/current', requireAuth, async (req, res, next) => {
 
 
 // Get Details for a spot from an Id
-// router.get('/:spotId', async (req, res) => {
-//   const spot = await Spot.findByPk(req.params.spotId, {
-//       include: [
-//         {
-//           model: User, as: 'Owner',
-//           attributes: ['id', 'firstName', 'lastName']
-//         },
-//         {
-//           model: SpotImage,
-//           attributes: ['id', 'url', 'preview']
-//         }
-//       ]
-//     });
-
-//   if (!spot) {
-//   return res
-//       .status(404)
-//       .json({
-//           message: "Spot couldn't be found",
-//           statusCode: res.statusCode
-//       })
-//   };
-
-//   const reviewCount = await Review.count({ where: { spotId: spot.id } });
-
-//   const starTotal = await Review.sum('stars', {
-//   where: { spotId: spot.id }
-//   });
-
-//   const spotJSON = spot.toJSON();
-
-//   if (!starTotal) {
-//   spotJSON.avgStarRating = 0
-//   } else {
-//   spotJSON.avgStarRating = (starTotal / reviewCount).toFixed(1);
-//   spotJSON.numReviews = reviewCount;
-//   }
-
-//   return res.json(spotJSON)
-// });
-
-
 router.get('/:spotId', async (req, res, next) => {
 
   let { spotId } = req.params;
