@@ -13,7 +13,6 @@ if (process.env.NODE_ENV !== 'production') {
   window.store = store;
 }
 
-
 function Root() {
   return (
     <Provider store={store}>
@@ -26,7 +25,7 @@ function Root() {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Root />
+    <App />
   </React.StrictMode>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );
