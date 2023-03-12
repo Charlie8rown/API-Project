@@ -1,1 +1,4 @@
 /* Define all your CSS styling rules for the Navigation component in the Navigation.css file. */
+.hidden {
+  display: none;
+}
