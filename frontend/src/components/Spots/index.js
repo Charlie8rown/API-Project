@@ -6,8 +6,9 @@ import { getSpot } from "../../store/spot";
 import SpotDeatils from "../SpotDetails";
 
 const Spots = () => {
-  const dispatch = useDispatch()
-  const spots = Object.values(useSelector(state => state.spot.entries))
+  const dispatch = useDispatch();
+  const spotObj = useSelector(state => state.spot.allSpots);
+  const spots = Object.values(spotObj);
 
   useEffect(() => {
     dispatch(getSpot())
