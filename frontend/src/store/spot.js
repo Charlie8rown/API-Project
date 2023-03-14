@@ -32,7 +32,7 @@ export const removeSpots = (id) => ({
 })
 
 
-// Thunk Get all Spots
+// Thunk Get all Spots with spot details
 export const getSpot = () => async (dispatch) => {
   const response = await csrfFetch("/api/spots");
   if (response.ok) {
@@ -46,31 +46,32 @@ export const getSpot = () => async (dispatch) => {
 // Thunk get just one spot
 export const getSingleSpot = (spotId) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}`);
-  const spotData = await response.jsion();
+  const spotData = await response.json();
 
   dispatch(loadOneSpot(spotData))
   return spotData
 }
 
 
-
-const initialState = { allSpots: {}, singleSpot: {}, userSpecificSpots: {}}
+// Reducer for get all spots and single spot
+const initialState = { allSpots: {}, singleSpot: {}}
 
 export const spotsReducer = (state = initialState, action) => {
   let newState;
   switch(action.type) {
-      case LOAD_SPOTS:
-          newState = {...state}
-          newState = { allSpots: {}, singleSpot: {}}
-          action.payload.Spots.forEach(spot => {
-              newState.allSpots[spot.id] = spot
-          });
-          return newState
-      case LOAD_ONE_SPOT:
-          newState = {...state}
-          newState.singleSpot = action.payload
-          return newState
-      default:
-          return state
+    case LOAD_SPOTS:
+      newState = {...state}
+      newState = { allSpots: {}, singleSpot: {}}
+      action.payload.Spots.forEach(spot => {
+        newState.allSpots[spot.id] = spot
+      });
+      return newState
+    case LOAD_ONE_SPOT:
+      newState = {...state}
+      newState.singleSpot = action.payload
+      return newState
+    default:
+      return state
+
   }
 }
