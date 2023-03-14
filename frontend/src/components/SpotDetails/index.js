@@ -1,7 +1,5 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useEffect } from "react";
 
 const SpotDeatils = () => {
   const { id } = useParams();

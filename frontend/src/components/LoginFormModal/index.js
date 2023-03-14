@@ -35,23 +35,14 @@ function LoginFormModal() {
         </ul>
         <label>
           Username or Email
-          <input
-            type="text"
-            value={credential}
-            onChange={(e) => setCredential(e.target.value)}
-            required
-          />
+          <input type="text" value={credential} onChange={(e) => setCredential(e.target.value)} required/>
         </label>
         <label>
           Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
         </label>
         <button type="submit">Log In</button>
+        <button onClick={() => dispatch(sessionActions.login({credential: "Demo-lition", password: "password"})).then(closeModal)}>DemoUser</button>
       </form>
     </>
   );
