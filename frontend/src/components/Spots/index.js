@@ -17,21 +17,35 @@ const Spots = () => {
 
   return (
     <div>
-      <h1>Spot List</h1>
-      <ol>
-        {spots.map(({ id, name }) => {
-          return (
-            <li key={id}>
-              <NavLink to={`/spots/${id}`}>{name}</NavLink>
-            </li>
-          )
-        })}
-      </ol>
-      <Switch>
-        <Route path="/spots/:id"><SpotDeatils spots={spots} /></Route>
-      </Switch>
-    </div>
-  )
-}
+      {spots.map(({ id, name, previewImage, city, state, price, avgRating }) => {
+        let rating = 0;
+        if (!isNaN(avgRating)) {
+          rating = Math.round(Number(avgRating) * 1000) / 1000;
+        }
+        let ratingString = rating.toFixed(2);
+        return (
+          <div>
+            <div>
+              <NavLink to= {`/spots/${id}`} >
+                <div>
+                  <img src={previewImage} alt={name} />
+                    <div>
+                      <p>{city}, {state}</p>
+                      <p>{ratingString}</p>
+                    </div>
+                  <p>${price} night</p>
+                </div>
+              </NavLink>
+            </div>
+          </div>
+        )
+      })}
+    <Switch>
+      <Route path='/spots/:id'>
+        <SpotDeatils spots={spots} />
+      </Route>
+    </Switch>
+  </div>
+)}
 
 export default Spots
