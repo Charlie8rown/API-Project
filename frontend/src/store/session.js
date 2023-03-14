@@ -2,13 +2,6 @@ import { csrfFetch } from './csrf';
 
 const SET_USER = 'session/setUser';
 const REMOVE_USER = 'session/removeUser';
-const SET_DEMO_USER = 'session/demoUser';
-
-// Demo User
-const setDemoUser = (user) => ({
-  type: SET_DEMO_USER,
-  payload: user
-})
 
 // Current User
 const setUser = (user) => {
