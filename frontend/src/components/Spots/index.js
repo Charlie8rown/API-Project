@@ -26,7 +26,7 @@ const Spots = () => {
         return (
           <div>
             <div>
-              <NavLink to= {`/spots/${id}`} >
+              <NavLink to={`/spots/${id}`} >
                 <div>
                   <img src={previewImage} alt={name} />
                     <div>
