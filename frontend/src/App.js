@@ -51,6 +51,7 @@ function App() {
         <Switch>
           <Route path={["/"]} exact><Spots /></Route>
           <Route path={["/spots/:spotId"]} exact><SpotDetails /></Route>
+          <Route path={["/spots/new"]}><createSpot></createSpot></Route>
         </Switch>
       )}
     </>

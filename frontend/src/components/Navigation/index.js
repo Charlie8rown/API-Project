@@ -6,7 +6,7 @@ import './Navigation.css';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
-import CreateSpot from '../CreateSpotModal';
+import CreateSpot from '../CreateSpot';
 import OpenModalMenuItem from './OpenModalMenuItem';
 
 function Navigation({ isLoaded }){
@@ -37,10 +37,11 @@ function Navigation({ isLoaded }){
       </li>
       {isLoaded && (
         <li>
-          <ProfileButton user={sessionUser} />
+          {/* <NavLink to="/spots/new">Add a Spot</NavLink> */}
+          {/* <ProfileButton user={sessionUser} /> */}
+          <NavLink to="/spots/new">Add a Spot</NavLink> {isLoaded && (<ProfileButton user={sessionUser} />)}
         </li>
       )}
-      <OpenModalMenuItem buttonText="Create a Spot" modalComponent={<CreateSpot></CreateSpot>}></OpenModalMenuItem>
     </ul>
   );
 }
