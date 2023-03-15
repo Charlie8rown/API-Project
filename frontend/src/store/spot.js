@@ -59,7 +59,7 @@ const initialState = { allSpots: {}, singleSpot: {}}
 
 export const spotsReducer = (state = initialState, action) => {
   let newState;
-  console.log("here: ", action)
+
   switch(action.type) {
     case LOAD_SPOTS:
       newState = {...state}
