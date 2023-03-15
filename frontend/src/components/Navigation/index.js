@@ -6,6 +6,8 @@ import './Navigation.css';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
+import CreateSpot from '../CreateSpotModal';
+import OpenModalMenuItem from './OpenModalMenuItem';
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
@@ -38,6 +40,7 @@ function Navigation({ isLoaded }){
           <ProfileButton user={sessionUser} />
         </li>
       )}
+      <OpenModalMenuItem buttonText="Create a Spot" modalComponent={<CreateSpot></CreateSpot>}></OpenModalMenuItem>
     </ul>
   );
 }
