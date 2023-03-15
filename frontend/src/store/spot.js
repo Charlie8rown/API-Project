@@ -46,7 +46,6 @@ export const getAllSpots = () => async (dispatch) => {
 // Thunk get just one spot
 export const getSingleSpot = (spotId) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}`);
-  console.log("spot Data: ", response);
   const spotData = await response.json();
 
   dispatch(loadOneSpot(spotData))
