@@ -33,7 +33,7 @@ export const removeSpots = (id) => ({
 
 
 // Thunk Get all Spots with spot details
-export const getSpot = () => async (dispatch) => {
+export const getAllSpots = () => async (dispatch) => {
   const response = await csrfFetch("/api/spots");
   if (response.ok) {
     const data = await response.json();
@@ -46,8 +46,8 @@ export const getSpot = () => async (dispatch) => {
 // Thunk get just one spot
 export const getSingleSpot = (spotId) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}`);
+  console.log("spot Data: ", response);
   const spotData = await response.json();
-  console.log("spot Data: ", spotData);
 
   dispatch(loadOneSpot(spotData))
   return spotData
@@ -59,7 +59,7 @@ const initialState = { allSpots: {}, singleSpot: {}}
 
 export const spotsReducer = (state = initialState, action) => {
   let newState;
-  console.log("here: ", action)
+
   switch(action.type) {
     case LOAD_SPOTS:
       newState = {...state}
