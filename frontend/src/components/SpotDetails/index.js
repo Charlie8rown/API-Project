@@ -1,13 +1,13 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { getSingleSpot } from "../../store/spot";
+import "./spotDetails.css"
 
 const SpotDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const SpotDetails = useSelector(state => state.spot.entries[id]);
+  const spotDetails = useSelector(state => state.spot.singleSpot);
 
   useEffect(() => {
     dispatch(getSingleSpot(id))
@@ -15,11 +15,11 @@ const SpotDetails = () => {
 
   return (
     <div>
-      <h1>{SpotDetails.name}</h1>
-      <p>{SpotDetails.address}, {SpotDetails?.city}, {SpotDetails.state}, {SpotDetails.country}</p>
-      <p>{SpotDetails.desription}</p>
-      <img src={SpotDetails.previewIamge} alt={SpotDetails.name} />
-      <p>Average Rating: {SpotDetails.avgRating}</p>
+      <h1>{spotDetails.name}</h1>
+      <p>{spotDetails.address}, {spotDetails?.city}, {spotDetails.state}, {spotDetails.country}</p>
+      <p>{spotDetails.desription}</p>
+      <img src={spotDetails.previewIamge} alt={spotDetails.name} />
+      <p>Average Rating: {spotDetails.avgRating}</p>
     </div>
   )
 }
