@@ -34,6 +34,7 @@ import { Route, Switch } from "react-router-dom";
 import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
 import Spots from "./components/Spots";
+import SpotDetails from "./components/SpotDetails";
 
 function App() {
   const dispatch = useDispatch();
@@ -48,9 +49,8 @@ function App() {
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
         <Switch>
-          <Route path={["/"]} exact>
-            <Spots />
-          </Route>
+          <Route path={["/"]} exact><Spots /></Route>
+          <Route path={["/spots/:spotId"]} exact><SpotDetails /></Route>
         </Switch>
       )}
     </>
