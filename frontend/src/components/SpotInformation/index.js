@@ -11,9 +11,9 @@ const SpotDetails = () => {
 
   useEffect(() => {
     dispatch(getSingleSpot(spotId))
-  }, [dispatch, spotId, spotInfo])
+  }, [dispatch, spotId])
 
-  if (!spotInfo) {
+  if (!spotInfo || !spotInfo.name) {
     <p>No information for this spot at the moment. Please come back at later time.</p>
   }
 
@@ -23,6 +23,9 @@ const SpotDetails = () => {
       <h3>{spotInfo.address}, {spotInfo.city}, {spotInfo.state}, {spotInfo.country}</h3>
       <h3>{spotInfo.desription}</h3>
       <h3>{spotInfo.price}</h3>
+      {spotInfo.SpotImages.map((img, i) => {
+        return <img src={img.url} alt={spotInfo.name} />
+      })}
       <img src={spotInfo.previewImage} alt={spotInfo.name} />
       <h3>Average Rating: {spotInfo.avgRating}</h3>
     </div>
