@@ -6,13 +6,15 @@ import * as spotsActions from "../../store/spot";
 // Modal for creating a spot
 function createSpot() {
   const dispatch = useDispatch();
-  const [] = useState("");
-  const [] = useState("");
-  const [] = useState("");
-  const [] = useState("");
-  const [] = useState("");
-  const [] = useState("");
-  const [] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
+  const [name, setName] = useState("");
+  const [desription, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [errors, setErrors] = useState("");
+  const { closeModal } = useModal();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,6 +37,6 @@ function createSpot() {
 //     </>
 //   )
 
-// }
+ }
 
 export default createSpot
