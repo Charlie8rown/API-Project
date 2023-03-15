@@ -26,9 +26,9 @@ const Spots = () => {
         let ratingString = rating.toFixed(2);
         return (
           <div key={id}>
-            <div className="main">
+            <div>
               <NavLink to={`/spots/${id}`} >
-                <div className="img">
+                <div>
                   <img src={previewImage} alt={name} />
                     <div>
                       <p>{city}, {state}</p>
