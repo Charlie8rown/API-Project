@@ -3,7 +3,7 @@ import { csrfFetch } from './csrf';
 const SET_USER = 'session/setUser';
 const REMOVE_USER = 'session/removeUser';
 
-// Current User
+// Current User (action creator)
 export const setUser = (user) => {
   return {
     type: SET_USER,
@@ -12,7 +12,7 @@ export const setUser = (user) => {
 };
 
 
-// Delete User
+// Delete User (action creator)
 export const removeUser = () => {
   return {
     type: REMOVE_USER,
@@ -20,7 +20,7 @@ export const removeUser = () => {
 };
 
 
-// User login
+// User login (action creator)
 export const login = (user) => async (dispatch) => {
   const { credential, password } = user;
   const response = await csrfFetch('/api/session', {

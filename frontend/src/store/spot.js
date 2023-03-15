@@ -33,7 +33,7 @@ export const removeSpots = (id) => ({
 
 
 // Thunk Get all Spots with spot details
-export const getSpot = () => async (dispatch) => {
+export const getAllSpots = () => async (dispatch) => {
   const response = await csrfFetch("/api/spots");
   if (response.ok) {
     const data = await response.json();
