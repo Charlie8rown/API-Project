@@ -52,6 +52,33 @@ export const getSingleSpot = (spotId) => async (dispatch) => {
   return spotData
 }
 
+// Thunk create a spot
+export const createSpot = (spots, spotImages) => async (dispatch) => {
+  const response = await csrfFetch("/api/spots", {
+    method: "POST",
+    body: JSON.stringify(spots)
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    const spotId = data.id;
+
+    const imageResponse = await csrfFetch(`/api/spots/${spotId}/images`, {
+      method: "POST",
+      body: JSON.stringify({ url: spotImages, preview: true })
+    })
+
+    if (imageResponse.ok) {
+      const imageData = await imageResponse.json();
+      const allInfo = {...data, previewImage: imageData.url};
+
+      allInfo.avgRating = "No reviews"
+      dispatch(createSpot(allInfo))
+      return allInfo
+    }
+  }
+}
+
 
 // Reducer for get all spots and single spot
 const initialState = { allSpots: {}, singleSpot: {}}

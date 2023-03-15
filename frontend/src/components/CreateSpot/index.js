@@ -29,16 +29,21 @@ const createSpot = () => {
   return (
     <>
       <h1>Add a Spot</h1>
-        <form>
+          <h2>Where's your place located?</h2>
+          <h3>Guests will only get your exact address once they booked a reservation.</h3>
+        <form onSubmit={handleSubmit}>
         <ul>
-          <label>Adress<input type="text"/></label>
-          <label>City<input type="text"/></label>
-          <label>State<input type="text"/></label>
-          <label>Country<input type="text"/></label>
-          <label>Name<input type="text"/></label>
-          <label>Description<input type="text"/></label>
-          <label>Price<input type="number" min="1" max="1000000"/></label>
-          <label>Add an Image<input type="file"/></label>
+          <label>Country<input type="text" value={country} onChange={(e) => setCountry(e.target.value)}/></label>
+          <label>Adress<input type="text" value={address} onChange={(e) => setAddress(e.target.value)}/></label>
+          <label>City<input type="text" value={city} onChange={(e) => setCity(e.target.value)}/></label>
+          <label>State<input type="text" value={state} onChange={(e) => setState(e.target.value)}/></label>
+          <label>Description<input type="text" value={desription} onChange={(e) => setDescription(e.target.value)}/></label>
+          <label>Name<input type="text" value={name} onChange={(e) => setName(e.target.value)}/></label>
+          <label>Price<input type="number" value={price}  onChange={(e) => setPrice(e.target.value)} min="1" max="1000000"/></label>
+          <label>Add an Image<input type="text" value={previewImage} onChange={(e) => setPreviewImage(e.target.value)}/></label>
+          <label>Add an Image<input type="text" value={imgUrl1} onChange={(e) => setimgUrl1(e.target.value)}/></label>
+          <label>Add an Image<input type="text" value={imgUrl2} onChange={(e) => setimgUrl2(e.target.value)}/></label>
+          <label>Add an Image<input type="text" value={imgUrl3} onChange={(e) => setimgUrl3(e.target.value)}/></label>
           <button type="Create">Submit</button>
         </ul>
       </form>
