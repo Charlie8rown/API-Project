@@ -14,7 +14,7 @@ const SpotDetails = () => {
   }, [dispatch, spotId])
 
   if (!spotInfo || !spotInfo.name) {
-    <p>No information for this spot at the moment. Please come back at later time.</p>
+    return <p>No information for this spot at the moment. Please come back at later time.</p>
   }
 
   return (
@@ -23,10 +23,10 @@ const SpotDetails = () => {
       <h3>{spotInfo.address}, {spotInfo.city}, {spotInfo.state}, {spotInfo.country}</h3>
       <h3>{spotInfo.desription}</h3>
       <h3>{spotInfo.price}</h3>
-      {spotInfo.SpotImages.map((img, i) => {
-        return <img src={img.url} alt={spotInfo.name} />
+      {spotInfo.SpotImages.map((img) => {
+        return <img src={img.url} alt={spotInfo.name} key={img.id}></img>
       })}
-      <img src={spotInfo.previewImage} alt={spotInfo.name} />
+      {/* <img src={spotInfo.previewImage} alt={spotInfo.name} /> */}
       <h3>Average Rating: {spotInfo.avgRating}</h3>
     </div>
   )
