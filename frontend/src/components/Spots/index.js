@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Route, Switch } from "react-router-dom";
 import { getSpot } from "../../store/spot";
-import SpotDeatils from "../SpotDetails";
+import SpotDetails from "../SpotDetails";
+import "./spots.css";
 
 const Spots = () => {
   const dispatch = useDispatch();
@@ -18,13 +19,13 @@ const Spots = () => {
   return (
     <div>
       {spots.map(({ id, name, previewImage, city, state, price, avgRating }) => {
-        let rating = 0;
+        let rating = 5;
         if (!isNaN(avgRating)) {
           rating = Math.round(Number(avgRating) * 1000) / 1000;
         }
         let ratingString = rating.toFixed(2);
         return (
-          <div>
+          <div key={id}>
             <div>
               <NavLink to={`/spots/${id}`} >
                 <div>
@@ -42,7 +43,7 @@ const Spots = () => {
       })}
     <Switch>
       <Route path='/spots/:id'>
-        <SpotDeatils spots={spots} />
+        <SpotDetails spots={spots} />
       </Route>
     </Switch>
   </div>

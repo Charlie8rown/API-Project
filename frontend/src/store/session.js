@@ -4,7 +4,7 @@ const SET_USER = 'session/setUser';
 const REMOVE_USER = 'session/removeUser';
 
 // Current User
-const setUser = (user) => {
+export const setUser = (user) => {
   return {
     type: SET_USER,
     payload: user,
@@ -13,7 +13,7 @@ const setUser = (user) => {
 
 
 // Delete User
-const removeUser = () => {
+export const removeUser = () => {
   return {
     type: REMOVE_USER,
   };
