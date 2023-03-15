@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Route, Switch } from "react-router-dom";
 import { getAllSpots } from "../../store/spot";
 import SpotDetails from "../SpotInformation";
-import "./spots.css";
+import "./Spots.css";
 
 const Spots = () => {
   const dispatch = useDispatch();
