@@ -18,9 +18,23 @@ function createSpot() {
     e.preventDefault();
     return
   }
-  return
-  //jsx
+//   return (
+//     <>
+//       <h1>Add a Spot</h1>
+//         <form onSubmit={handleSubmit}>
+//         <ul>
+//           <label></label>
+//           <label></label>
+//           <label></label>
+//           <label></label>
+//           <label></label>
+//           <label></label>
+//           <label></label>
+//         </ul>
+//       </form>
+//     </>
+//   )
 
-}
+// }
 
 export default createSpot
