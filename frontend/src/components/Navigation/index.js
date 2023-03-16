@@ -6,8 +6,7 @@ import './Navigation.css';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
-import CreateSpot from '../CreateSpot';
-import OpenModalMenuItem from './OpenModalMenuItem';
+
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
