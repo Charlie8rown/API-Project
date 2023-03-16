@@ -5,7 +5,8 @@ const ADD_SPOTS = "spots/addSpots";
 const EDIT_SPOTS = "spots/editSpots";
 const DELETE_SPOTS = "spts/deleteSpots";
 const LOAD_ONE_SPOT = "spots/oneSpot"
-const ADD_SPOT_IMAGES = "spots/ADD_SPOT_IMAGE"
+const ADD_SPOT_IMAGES = "spots/ADD_SPOT_IMAGE";
+const REMOVE_SPOT = "spots/CLEAR_SPOT";
 
 export const loadSpots = (spots) => ({
   type: LOAD_SPOTS,
@@ -37,6 +38,10 @@ export const addSpotImage = (spot, spotImages) => ({
   payload: { spot, spotImages }
 })
 
+export const removeSpot = () => ({
+  type: REMOVE_SPOT
+})
+
 
 // Thunk Get all Spots with spot details
 export const getAllSpots = () => async (dispatch) => {
@@ -50,12 +55,16 @@ export const getAllSpots = () => async (dispatch) => {
 }
 
 // Thunk get just one spot
-export const getSingleSpot = (spotId) => async (dispatch) => {
+export const getSingleSpot = (spotId) => async dispatch => {
   const response = await csrfFetch(`/api/spots/${spotId}`);
-  const spotData = await response.json();
+  if(response.ok) {
+    const payload = await response.json()
+    dispatch(loadSpots(payload))
+  }
+}
 
-  dispatch(loadOneSpot(spotData))
-  return spotData
+export const clearSpot = () => async dispatch => {
+  dispatch(removeSpot())
 }
 
 // Thunk create a spot
@@ -96,33 +105,34 @@ export const createSpot = (spot, spotImages) => async (dispatch)=> {
 
 
 // Reducer for get all spots, single spot, create spot
-const initialState = { allSpots: {}, singleSpot: {}}
+const initialState = { allSpots: {}, singleSpot: {} };
 
 export const spotsReducer = (state = initialState, action) => {
   let newState;
 
-  switch(action.type) {
-    case LOAD_SPOTS:
-      newState = {...state}
-      newState = { allSpots: {}, singleSpot: {}}
-      action.payload.Spots.forEach(spot => {
-        newState.allSpots[spot.id] = spot
-      });
-      return newState
+  switch (action.type) {
     case LOAD_ONE_SPOT:
-      newState = {...state}
-      newState.singleSpot = action.payload
-      return newState
+      newState = { ...state };
+      newState = { allSpots: {}, singleSpot: {} };
+      action.payload.Spots.forEach((spot) => {
+        newState.allSpots[spot.id] = spot;
+      });
+      return newState;
+    case LOAD_SPOTS:
+      return {
+        ...state,
+        singleSpot: { ...action.payload },
+      };
     default:
-      return state
+      return state;
     case ADD_SPOTS:
-      newState = {...state}
-      let copy = {...newState.allSpots}
-      copy[action.payload.id] = action.payload
-      newState.allSpots = copy
-      return newState
+      newState = { ...state };
+      let copy = { ...newState.allSpots };
+      copy[action.payload.id] = action.payload;
+      newState.allSpots = copy;
+      return newState;
   }
-}
+};
 
 
 // Reducer for create spot
