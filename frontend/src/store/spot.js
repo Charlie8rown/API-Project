@@ -1,12 +1,13 @@
 import { csrfFetch } from "./csrf";
 
+
+// Variables
 const LOAD_SPOTS = "spots/loadSpots";
 const ADD_SPOTS = "spots/addSpots";
 const EDIT_SPOTS = "spots/editSpots";
 const DELETE_SPOTS = "spts/deleteSpots";
 const LOAD_ONE_SPOT = "spots/oneSpot"
 const ADD_SPOT_IMAGES = "spots/ADD_SPOT_IMAGE";
-const REMOVE_SPOT = "spots/CLEAR_SPOT";
 
 export const loadSpots = (spots) => ({
   type: LOAD_SPOTS,
@@ -38,34 +39,35 @@ export const addSpotImage = (spot, spotImages) => ({
   payload: { spot, spotImages }
 })
 
-export const removeSpot = () => ({
-  type: REMOVE_SPOT
-})
-
 
 // Thunk Get all Spots with spot details
-export const getAllSpots = () => async (dispatch) => {
-  const response = await csrfFetch("/api/spots");
-  if (response.ok) {
-    const data = await response.json();
+export const getAllSpots = () => async dispatch => {
+  const response = await fetch("/api/spots");
 
-    dispatch(loadSpots(data))
-    return data
+  if (response.ok) {
+    const spotsJSON = await response.json();
+
+    spotsJSON.Spots.forEach(spot => {
+
+      if (!spot.avgRating) {
+        spot.avgRating = "New"
+      }
+    })
+    console.log(spotsJSON);
+    dispatch(loadSpots(spotsJSON));
   }
-}
+};
 
 // Thunk get just one spot
-export const getSingleSpot = (spotId) => async dispatch => {
-  const response = await csrfFetch(`/api/spots/${spotId}`);
-  if(response.ok) {
-    const payload = await response.json()
-    dispatch(loadSpots(payload))
-  }
-}
+export const oneSpotThunk = id => async dispatch => {
+  const response = await fetch(`/api/spots/${id}`);
 
-export const clearSpot = () => async dispatch => {
-  dispatch(removeSpot())
-}
+  if (response.ok) {
+    const spot = await response.json();
+    dispatch(loadOneSpot(spot));
+    return spot;
+  }
+};
 
 // Thunk create a spot
 export const createSpot = (spot, spotImages) => async (dispatch)=> {
@@ -112,25 +114,31 @@ export const spotsReducer = (state = initialState, action) => {
 
   switch (action.type) {
     case LOAD_ONE_SPOT:
-      newState = { ...state };
-      newState = { allSpots: {}, singleSpot: {} };
-      action.payload.Spots.forEach((spot) => {
-        newState.allSpots[spot.id] = spot;
-      });
-      return newState;
-    case LOAD_SPOTS:
       return {
         ...state,
         singleSpot: { ...action.payload },
       };
-    default:
-      return state;
+    case LOAD_SPOTS:
+      const allSpots = {};
+      action.payload.Spots.forEach((spot) => (allSpots[spot.id] = spot));
+      return {
+        ...state,
+        allSpots,
+      };
     case ADD_SPOTS:
       newState = { ...state };
       let copy = { ...newState.allSpots };
       copy[action.payload.id] = action.payload;
       newState.allSpots = copy;
       return newState;
+      case REMOVE_SPOT:
+      const clearSpot = {}
+      return {
+        ...state,
+        singleSpot: clearSpot
+      }
+    default:
+      return state;
   }
 };
 
