@@ -34,7 +34,8 @@ import { Route, Switch } from "react-router-dom";
 import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
 import Spots from "./components/Spots";
-import SpotDetails from "./components/SpotInformation";
+import SpotInformation from "./components/SpotInformation";
+import CreateSpotForm from "./components/CreateSpot";
 
 function App() {
   const dispatch = useDispatch();
@@ -50,7 +51,8 @@ function App() {
       {isLoaded && (
         <Switch>
           <Route path={["/"]} exact><Spots /></Route>
-          <Route path={["/spots/:spotId"]} exact><SpotDetails /></Route>
+          <Route path={["/spots/new"]}><CreateSpotForm></CreateSpotForm></Route>
+          <Route path={["/spots/:spotId"]} exact><SpotInformation /></Route>
         </Switch>
       )}
     </>

@@ -52,6 +52,12 @@ export const getSingleSpot = (spotId) => async (dispatch) => {
   return spotData
 }
 
+// Thunk create a spot
+export const createSpot = () => async ()=> {
+
+}
+
+
 
 // Reducer for get all spots and single spot
 const initialState = { allSpots: {}, singleSpot: {}}

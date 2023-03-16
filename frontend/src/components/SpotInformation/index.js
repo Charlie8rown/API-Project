@@ -13,6 +13,7 @@ const SpotDetails = () => {
     dispatch(getSingleSpot(spotId))
   }, [dispatch, spotId])
 
+  // makes sures to conditionally renders the spot
   if (!spotInfo || !spotInfo.name) {
     return <p>No information for this spot at the moment. Please come back at later time.</p>
   }
