@@ -29,30 +29,35 @@
 // export default App;
 
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation/Navigation";
 import Spots from "./components/Spots/Spots";
 import SpotDetails from "./components/SpotDetails/SpotDetails";
-import CreateSpotForm from "./components/CreateSpot/CreateSpot";
 
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const isLoggedIn = useSelector(state => state.session.user != null);
+
   useEffect(() => {
+    if (!isLoggedIn)  {
     dispatch(sessionActions.restoreUser()).then(() => setIsLoaded(true));
-  }, [dispatch]);
+    } else {
+      setIsLoaded(true);
+    }
+  }, [dispatch, isLoggedIn]);
 
   return (
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
         <Switch>
-          <Route path={["/"]} exact><Spots /></Route>
-          <Route path={["/spots/new"]}><CreateSpotForm></CreateSpotForm></Route>
-          <Route path={["/spots/:spotId"]} exact><SpotDetails /></Route>
+          <Route exact path="/"><Spots/></Route>
+          <Route path="/spots/:spotId"><SpotDetails />
+          </Route>
         </Switch>
       )}
     </>
