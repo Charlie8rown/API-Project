@@ -4,7 +4,8 @@ const LOAD_SPOTS = "spots/loadSpots";
 const ADD_SPOTS = "spots/addSpots";
 const EDIT_SPOTS = "spots/editSpots";
 const DELETE_SPOTS = "spts/deleteSpots";
-const LOAD_ONE_SPOT = 'spots/oneSpot'
+const LOAD_ONE_SPOT = "spots/oneSpot"
+const ADD_SPOT_IMAGES = "spots/ADD_SPOT_IMAGE"
 
 export const loadSpots = (spots) => ({
   type: LOAD_SPOTS,
@@ -31,6 +32,11 @@ export const removeSpots = (id) => ({
   payload: id
 })
 
+export const addSpotImage = (spot, spotImages) => ({
+  type: ADD_SPOT_IMAGES,
+  payload: { spot, spotImages }
+})
+
 
 // Thunk Get all Spots with spot details
 export const getAllSpots = () => async (dispatch) => {
@@ -53,29 +59,37 @@ export const getSingleSpot = (spotId) => async (dispatch) => {
 }
 
 // Thunk create a spot
-export const createSpot = (spots, spotImages) => async (dispatch)=> {
+export const createSpot = (spot, spotImages) => async (dispatch)=> {
+  const spotOwner = spot.Owner;
+
   const response = await csrfFetch("/api/spots", {
     method: "POST",
-    body: JSON.stringify(spots)
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(spot)
   })
 
   if (response.ok) {
-    const data = await response.json();
-    const spotId = data.id;
+    const spot = await response.json();
+    dispatch(createSpot(spot));
 
-    const imageRes = await csrfFetch(`/api/spots/${spotId}/images`, {
-      method: "POST",
-      body: JSON.stringify({ url: spotImages, preview: true })
-    })
+    const spotImgArr = [];
 
-    if (imageRes.ok) {
-      const data = await imageRes.json();
-      const allInfo =  {...data, previewImage: data.url}
+    for (let spotImg of spotImages) {
+      const resImage = await csrfFetch(`/api/spots/${spot.id}/images`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(spotImg)
+      });
 
-      allInfo.avgRating = "No reviews"
-      dispatch(createSpot(allInfo))
-      return allInfo
+      if (resImage.ok) {
+        const spotImg = await resImage.json();
+        spotImgArr.push(spotImg)
+      }
     }
+    spot.Owner = spotOwner;
+
+    dispatch(addSpotImage(spot, spotImgArr));
+    return spot;
   }
 }
 
