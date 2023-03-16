@@ -106,10 +106,10 @@ const CreateSpotForm = () => {
 
 
       // If there is are any errors  it will not dispatch.
-      if (Object.keys(errors).length > 0) {
-        window.alert("Fix errors before creating spot!");
-        return
-      };
+      // if (Object.keys(errors).length > 0) {
+      //   window.alert("Fix errors before creating spot!");
+      //   return
+      // };
 
       if (newSpot) {
         const newestSpot = await dispatch(spotActions.createSpot(newSpot, spotImages));
@@ -151,7 +151,7 @@ const CreateSpotForm = () => {
         <input type="text" value={state} placeholder="state" onChange={(e) => setState(e.target.value)} />
 
         <label htmlFor="description">description {<span className={submit ? "error" : "hidden"}>{errors.description}</span>}</label>
-        <input type="text" value={description} placeholder="description" onChange={(e) => setDescription(e.target.value)} />
+        <textarea value={description} placeholder="description" onChange={(e) => setDescription(e.target.value)} />
 
         <label htmlFor="name">name {<span className={submit ? "error" : "hidden"}>{errors.name}</span>}</label>
         <input type="text" value={name} placeholder="name" onChange={(e) => setName(e.target.value)} />

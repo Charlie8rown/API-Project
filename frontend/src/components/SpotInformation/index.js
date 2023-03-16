@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { getSingleSpot } from "../../store/spot";
+import { clearSpot } from "../../store/spot";
 import "./SpotInformation.css"
 
 const SpotDetails = () => {
@@ -11,7 +12,8 @@ const SpotDetails = () => {
 
   useEffect(() => {
     dispatch(getSingleSpot(spotId))
-  }, [dispatch, spotId])
+    return () => dispatch(clearSpot())
+  }, [dispatch, spotId]);
 
   // makes sures to conditionally renders the spot
   if (!spotInfo || !spotInfo.name) {
@@ -21,12 +23,13 @@ const SpotDetails = () => {
   return (
     <div>
       <h1>{spotInfo.name}</h1>
-      <h3>{spotInfo.address}, {spotInfo.city}, {spotInfo.state}, {spotInfo.country}</h3>
+      <h3>{spotInfo.city}, {spotInfo.state}, {spotInfo.country}</h3>
       <h3>{spotInfo.desription}</h3>
       <h3>{spotInfo.price}</h3>
-      {spotInfo.SpotImages.map((img) => {
+      <spotImages images={spotInfo.SpotImages} />
+      {/* {spotInfo.SpotImages.map((img) => {
         return <img src={img.url} alt={spotInfo.name} key={img.id}></img>
-      })}
+      })} */}
       {/* <img src={spotInfo.previewImage} alt={spotInfo.name} /> */}
       <h3>Average Rating: {spotInfo.avgRating}</h3>
     </div>
