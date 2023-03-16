@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import './Navigation.css';
 import OpenModalButton from '../OpenModalButton';
-import LoginFormModal from '../LoginFormModal';
-import SignupFormModal from '../SignupFormModal';
+import LoginFormModal from '../LoginFormModal/LoginForms';
+import SignupFormModal from '../SignupFormModal/SignupForm';
 
 
 function Navigation({ isLoaded }){
@@ -37,7 +37,7 @@ function Navigation({ isLoaded }){
       {isLoaded && (
         <li>
           {/* <NavLink to="/spots/new">Add a Spot</NavLink> */}
-          {/* <ProfileButton user={sessionUser} /> */}
+          <ProfileButton user={sessionUser} />
           {/* <NavLink to="/spots/new">Add a Spot</NavLink> {isLoaded && (<ProfileButton user={sessionUser} />)} */}
         </li>
       )}

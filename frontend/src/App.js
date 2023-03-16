@@ -32,10 +32,10 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 import * as sessionActions from "./store/session";
-import Navigation from "./components/Navigation";
-import Spots from "./components/Spots";
-import SpotInformation from "./components/SpotInformation";
-import CreateSpotForm from "./components/CreateSpot";
+import Navigation from "./components/Navigation/Navigation";
+import Spots from "./components/Spots/Spots";
+import SpotDetails from "./components/SpotDetails/SpotDetails";
+import CreateSpotForm from "./components/CreateSpot/CreateSpot";
 
 function App() {
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ function App() {
         <Switch>
           <Route path={["/"]} exact><Spots /></Route>
           <Route path={["/spots/new"]}><CreateSpotForm></CreateSpotForm></Route>
-          <Route path={["/spots/:spotId"]} exact><SpotInformation /></Route>
+          <Route path={["/spots/:spotId"]} exact><SpotDetails /></Route>
         </Switch>
       )}
     </>
