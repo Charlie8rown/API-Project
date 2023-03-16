@@ -1,10 +1,10 @@
 import { csrfFetch } from "./csrf";
 
-const LOAD_ALL = "";
-const LOAD_ONE = "";
-const CREATE_SPOT = "";
-const UPDATE_SPOT = "";
-const DELETE = "";
+const LOAD_ALL = "/spots/loadAll";
+const LOAD_ONE = "/spots/loadOne";
+const CREATE_SPOT = "/spots/createSpot";
+// const UPDATE_SPOT = "/spots/updateSpot";
+// const DELETE = "/spots/deleteSpot";
 
 // Action Creators
 const loadAll = (spots) => ({
@@ -75,12 +75,15 @@ const initialState = {allSpots: {}, singleSpot: {}};
 
 export default function spotReducer (state = initialState, action) {
   let newState = {...state}
+  console.log(action);
   switch(action.type) {
     case LOAD_ALL:
     newState = { allSpots: {}, singleSpot: {} }
     action.spots.Spots.forEach(spot => {
+      newState.allSpots[spot.id] = spot
     });
     return newState
+    // return { ...state, allSpots: {...action.spots}}
 
     case LOAD_ONE: {
       return { ...state, singleSpot: action.spot }

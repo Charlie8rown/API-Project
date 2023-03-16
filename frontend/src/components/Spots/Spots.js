@@ -7,7 +7,7 @@ import "./Spots.css";
 
 const Spots = () => {
   const dispatch = useDispatch();
-  const allSpots = useSelector((state) => state.Spots.allSpots);
+  const allSpots = useSelector((state) => state.spot.allSpots);
   const allSpotsArr = Object.values(allSpots);
 
   useEffect(() => {
@@ -21,11 +21,11 @@ const Spots = () => {
   })
 
   return (
-      <div className="spots-container">
-          <ul className="spots-wrapper">
-              {spotItems}
-          </ul>
-      </div>
+    <div className="spots-container">
+      <ul className="spots-wrapper">
+        {spotItems}
+      </ul>
+    </div>
   )
 };
 

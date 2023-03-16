@@ -1,4 +1,4 @@
-import "./SpotsIndex.css";
+import "./SpotIndex.css";
 import { Link } from "react-router-dom";
 
 const SpotIndex = ({ spot }) => {
