@@ -3,7 +3,7 @@ import { csrfFetch } from "./csrf";
 const LOAD_ALL = "";
 const LOAD_ONE = "";
 const CREATE_SPOT = "";
-const CREATE_IMAGE = "";
+const UPDATE_SPOT = "";
 const DELETE = "";
 
 // Action Creators
@@ -17,74 +17,77 @@ const loadOne = (spot) => ({
   spot
 })
 
-const createSpot = (spot) => ({
-  type: CREATE_SPOT,
-  spot
-})
+// const createSpot = (spot) => ({
+//   type: CREATE_SPOT,
+//   spot
+// })
 
-const createImage = (image) => ({
-  type: CREATE_IMAGE,
-  image
-})
+// const updateSpot = (spot) => ({
+//   type: UPDATE_SPOT,
+//   spot
+// })
 
-const delete = (spotId) => ({
-  type: DELETE;
-  spotId
-})
+// const deleteSpot = (spotId) => ({
+//   type: DELETE,
+//   spotId
+// })
 
 
 
 // Thunk Actions
 export const getSpots = (payload) => async dispatch => {
+  const res = await csrfFetch("/api/spots");
 
-  return response
-}
+  if(res.ok) {
+    const spots = await res.json();
+    dispatch(loadAll(spots));
+    return spots;
+  }
+};
 
-export const getOneSpot = (id) => async dispatch => {
+export const getOneSpot = (spotId) => async dispatch => {
+  const res = await csrfFetch(`/api/spots/${spotId}`)
 
-  return response
-}
+  if (res.ok) {
+      const spot = await res.json();
+      dispatch(loadOne(spot));
+      return spot;
+  }
+};
 
-export const postSpot = (payload) => async dispatch => {
+// export const postSpot = (payload) => async dispatch => {
 
-  return spot
-}
+//   return spot
+// }
 
-export const deleteSpot = (id) => async dispatch => {
+// export const removeSpot = (id) => async dispatch => {
 
-  return response
-}
+//   return response
+// }
 
-export const putSpot = (payload => async dispatch => {
+// export const putSpot = (payload => async dispatch => {
 
-  return response
-})
+//   return response
+// })
 
 // Spot Reducer
-const initialState = {allSpotes: {}, singleSpot: {}};
+const initialState = {allSpots: {}, singleSpot: {}};
 
-const spotReducer = (state = initialState, action) => {
-  let newState:
-  switch (action.type) {
-    case LOAD_ALL: {
+export default function spotReducer (state = initialState, action) {
+  let newState = {...state}
+  switch(action.type) {
+    case LOAD_ALL:
+    newState = { allSpots: {}, singleSpot: {} }
+    action.spots.Spots.forEach(spot => {
+    });
+    return newState
 
-      return newState
-    }
     case LOAD_ONE: {
-
-      return newState
+      return { ...state, singleSpot: action.spot }
     }
     case CREATE_SPOT: {
-
-      return newState
-    }
-    case CREATE_IMAGE: {
-
-      return newState
-    }
-    case DELETE: {
-
-      return newState
+      newState.allSpots = {...state.allSpots, [action.spot.id]: action.spot}
+      return newState;
     }
     default:
       return state

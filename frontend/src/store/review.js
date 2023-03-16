@@ -1,51 +1,51 @@
-import { csrfFetch } from "./csrf";
+// import { csrfFetch } from "./csrf";
 
-const LOAD = "reviews/LOAD";
-const CREATE = "reviews/CREATE";
-const DELETE = "reviews/DELETE";
+// const LOAD = "reviews/LOAD";
+// const CREATE = "reviews/CREATE";
+// const DELETE = "reviews/DELETE";
 
 
 // Action Creators
-const load = (review) => ({
-  type: LOAD,
-  review
-})
+// const load = (review) => ({
+//   type: LOAD,
+//   review
+// })
 
-const create = (review) => ({
-  type: CREATE,
-  review
-})
+// const create = (review) => ({
+//   type: CREATE,
+//   review
+// })
 
-const remove = (reviewId) = ({
-  type: DELETE,
-  reviewId
-})
+// const remove = (reviewId) = ({
+//   type: DELETE,
+//   reviewId
+// })
 
 
 // Thunk Actions
-export const getReviews = (id) => async dispatch => {
+// export const getReviews = (id) => async dispatch => {
 
-  return response
-}
+//   return response
+// }
 
-export const postReview = (payload) => async dispatch => {
+// export const postReview = (payload) => async dispatch => {
 
-  return response
-}
+//   return response
+// }
 
-export const deleteReview = (id) => async dispatch => {
+// export const deleteReview = (id) => async dispatch => {
 
-  return response
-}
+//   return response
+// }
 
-// Review Reducer
-const initialState = {spots: {}, user: {}};
+// // Review Reducer
+// const initialState = {spots: {}, user: {}};
 
-const reviewReducer = (state = initialState, action) => {
-  switch (action.type) {
+// const reviewReducer = (state = initialState, action) => {
+//   switch (action.type) {
 
-    default: return state
-  }
-}
+//     default: return state
+//   }
+// }
 
-export default reviewReducer
+// export default reviewReducer
