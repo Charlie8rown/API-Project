@@ -1,71 +1,124 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useModal } from "../../context/Modal";
-import { createSpots } from '../../store/spots';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from 'react-router-dom';
-import './CreateSpot.css';
+import { createSpots, getSpots } from "../../store/spot";
+import './CreateSpot.css'
 
-const CreateSpot = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
+const AddSpotForm = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const [address, setAddress] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+    const [country, setCountry] = useState("");
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState("");
+    const [description, setDescription] = useState("")
+    const [url, setUrl] = useState("")
+    const [errors, setErrors] = useState([]);
 
-  const sessionUser = useSelector((state) => state.session.user);
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [country, setCountry] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [previewImage, setPreviewImage] = useState("");
-  const [errors, setErrors] = useState([]);
-  const { closeModal } = useModal();
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setErrors([]);
+        dispatch(createSpots({address, city, state, country, name, description, price, url, preview: true}))
+            .catch(async (res) => {
+                const data = await res.json();
+                if (data && data.errors) setErrors(data.errors);
+            })
+            .then(() => dispatch(getSpots()))
+        history.push('/');
+    }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setErrors([]);
-
-    const newSpotData = {
-      name,
-      address,
-      city,
-      state,
-      country,
-      description,
-      price,
-    };
-
-    dispatch(createSpots(newSpotData, previewImage))
-      .then((res) => history.push(`/spots/${res.id}`))
-      .then(closeModal())
-      .catch(async (res) => {
-        const data = await res.json();
-        if (data && data.errors) setErrors(data.errors);
-      });
-  };
-
-  return (
-    <>
-      {sessionUser ? (
-        <>
-          <h1>Form</h1>
-          <form onSubmit={handleSubmit}>
-            <ul>{errors.map((error, idx) => <li key={idx}>{error}</li>)}</ul>
-            <input type="text" placeholder="Name" required value={name} onChange={(e) => setName(e.target.value)}/>
-            <input type="text" placeholder="Address" required value={address} onChange={(e) => setAddress(e.target.value)}/>
-            <input type="text" placeholder="City" required value={city} onChange={(e) => setCity(e.target.value)}/>
-            <input type="text" placeholder="State" required value={state} onChange={(e) => setState(e.target.value)}/>
-            <input type="text" placeholder="Country" required value={country} onChange={(e) => setCountry(e.target.value)}/>
-            <textarea placeholder="Description" required value={description} onChange={(e) => setDescription(e.target.value)}/>
-            <input type="number" placeholder="Price" required min="1" max="2000" value={price} onChange={(e) => setPrice(e.target.value)}/>
-            <input type="url" placeholder="Preview Image Link" required value={previewImage} onChange={(e) => setPreviewImage(e.target.value)}/>
-            <button type="submit">Create New Spot</button>
-          </form>
-        </>
-      ) : (<div>Sorry User must be logged in.</div>)}
-    </>
-  );
+    return (
+        <div className="form-container">
+        <h1>List A New Spot</h1>
+        <form className="spot-form" onSubmit={handleSubmit}>
+            <ul>
+            {errors.map((error, idx) => <li key={idx}>{error}</li>)}
+            </ul>
+            <label>
+                Address
+                <input
+                placeholder="Address"
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+                />
+            </label>
+            <label>
+                City
+                <input
+                placeholder="City"
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                required
+                />
+            </label>
+            <label>
+                State
+                <input
+                placeholder="State"
+                type="text"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                required
+                />
+            </label>
+            <label>
+                Country
+                <input
+                placeholder="Country"
+                type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                required
+                />
+            </label>
+            <label>
+                Spot Name
+                <input
+                placeholder="Spot Name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                />
+            </label>
+            <label>
+                Price per night
+                <input
+                placeholder="Price Per-Night"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                min={"1"}
+                required
+                />
+            </label>
+            <label>
+                Image url
+                <input
+                placeholder="Image Url"
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                required
+                />
+            </label>
+            <label>
+                Description
+                <textarea
+                placeholder="Description goes here"
+                 value={description}
+                 onChange={(e) => setDescription(e.target.value)}
+                 required/>
+            </label>
+            <button type="submit">Submit</button>
+        </form>
+        </div>
+    )
 }
 
-export default CreateSpot;
+export default AddSpotForm;
