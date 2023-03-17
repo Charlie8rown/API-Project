@@ -17,10 +17,10 @@ const loadOne = (spot) => ({
   spot
 })
 
-// const createSpot = (spot) => ({
-//   type: CREATE_SPOT,
-//   spot
-// })
+const createSpot = (spot) => ({
+  type: CREATE_SPOT,
+  spot
+})
 
 // const updateSpot = (spot) => ({
 //   type: UPDATE_SPOT,
@@ -56,10 +56,28 @@ export const getOneSpot = (spotId) => async (dispatch) => {
 };
 
 
-// export const postSpot = (payload) => async dispatch => {
+export const createSpots = (newSpotInfo, previewImage) => async (dispatch) => {
+  const response = await csrfFetch("/api/spots", {
+    method: "POST",
+    headers: { "Content-Type": "application/json"},
+    body: JSON.stringify(newSpotInfo)
+  })
 
-//   return spot
-// }
+  if (response.ok) {
+    const newSpot = await response.json();
+
+    const res = await csrfFetch(`/api/apots/${newSpot.id}/image`, {
+      body: JSON.stringify({ url: previewImage , previewImage: true})
+    });
+
+    if (res.ok) {
+      const newSpotImage = await res.json();
+      newSpot.previewImage = newSpotImage.url
+      dispatch(createSpot(newSpot));
+      return newSpot;
+    }
+  }
+}
 
 // export const removeSpot = (id) => async dispatch => {
 
