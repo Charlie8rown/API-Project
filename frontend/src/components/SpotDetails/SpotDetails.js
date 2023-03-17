@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOneSpot } from '../../store/spot';
-import OpenModalButton from '../OpenModalButton';
+// import OpenModalButton from '../OpenModalButton';
 import comingSoon from "../../asset/image_coming_soon.jpeg";
 import "./SpotDetails.css";
 
