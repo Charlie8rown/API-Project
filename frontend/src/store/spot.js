@@ -45,15 +45,16 @@ export const getSpots = (payload) => async dispatch => {
   }
 };
 
-export const getOneSpot = (spotId) => async dispatch => {
-  const res = await csrfFetch(`/api/spots/${spotId}`)
+export const getOneSpot = (spotId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/spots/${spotId}`);
 
-  if (res.ok) {
-      const spot = await res.json();
-      dispatch(loadOne(spot));
-      return spot;
+  if (response.ok) {
+    const spot = await response.json();
+    dispatch(loadOne(spot));
+    return response;
   }
 };
+
 
 // export const postSpot = (payload) => async dispatch => {
 
@@ -75,7 +76,7 @@ const initialState = {allSpots: {}, singleSpot: {}};
 
 export default function spotReducer (state = initialState, action) {
   let newState = {...state}
-  console.log(action);
+
   switch(action.type) {
     case LOAD_ALL:
     newState = { allSpots: {}, singleSpot: {} }
@@ -83,10 +84,12 @@ export default function spotReducer (state = initialState, action) {
       newState.allSpots[spot.id] = spot
     });
     return newState
-    // return { ...state, allSpots: {...action.spots}}
 
     case LOAD_ONE: {
-      return { ...state, singleSpot: action.spot }
+      console.log("here");
+      const newState = {...state}
+      newState.singleSpot = action.spot
+      return newState
     }
     case CREATE_SPOT: {
       newState.allSpots = {...state.allSpots, [action.spot.id]: action.spot}
