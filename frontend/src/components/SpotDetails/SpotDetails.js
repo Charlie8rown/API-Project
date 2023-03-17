@@ -1,83 +1,40 @@
-import React, { useEffect, useState} from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { getOneSpot } from "../../store/spot"
-import { useHistory } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import "./SpotDetails.css"
+import { getOneSpot } from "../../store/spot";
+import './SpotDetails.css'
 
 
-
-
-const SpotDetails = ({currentSpot}) => {
-    const dispatch = useDispatch();
-    const history = useHistory();
-    const {spotId} = useParams();
-    const [isLoaded, setIsLoaded] = useState(false);
-    const loadedSpot = useSelector((state) => state.spot);
-    const singleSpot = useSelector(state => state.spot);
-    const images = useSelector(state => state.spot.SpotImages);
-    const [spot, setSpot] = useState(useSelector((state) => state.spot));
+const SpotDetail = () => {
+    const { spotId } = useParams()
+    const dispatch = useDispatch()
+    const spotDetail = useSelector(state => state.spot.singleSpot)
 
     useEffect(() => {
-        const initialLoad = () =>
-        {
-        const newSpot = dispatch(getOneSpot(spotId))
-        getOneSpot(newSpot);
-        }
-        setIsLoaded(false)
-        initialLoad()
-        setIsLoaded(true)
-    }, [dispatch])
-
-
-    useEffect(() => {
-
-        setIsLoaded(false)
         dispatch(getOneSpot(spotId))
-            .then(() => console.log("useEffect2"))
-            .then(() => setSpot(singleSpot))
-            .then(() => setIsLoaded(true))
+    }, [dispatch, spotId])
 
-      }, [spotId, ]);
 
-    const updateHandler = (e) => {
-       history.push(`/spots/${spotId}/update`)
-    };
-
+    if (!spotDetail || !spotDetail.name) {
+        return <h1>No information for this spot at the moment. Please come back at later time.</h1>
+    }
 
     return (
       <>
-        {isLoaded && (
-          <>
-            <h1>{currentSpot.name}</h1>
-            <div>
-              {currentSpot.city}, {currentSpot.state}, {currentSpot.country}
-            </div>
-
-            <div id="images-container">
-              <div id="spot-image-list">
-                {currentSpot.SpotImages &&
-                  currentSpot.SpotImages.map((img) => (
-                    <div className="image" key={img.id}>
-                      <img className="image" src={img.url} alt="img.jpg" />
-                    </div>
-                  ))}
-                {!currentSpot.SpotImages &&
-                  spot.SpotImages.map((img) => (
-                    <div className="image" key={img.id}>
-                      <img className="image" src={img.url} alt="img.jpg" />
-                    </div>
-                  ))}
-              </div>
-
-              <div>${currentSpot.price} night</div>
-            </div>
-          </>
-        )}
+        <h1>{spotDetail.name}</h1>
+        <p>{spotDetail.address}, {spotDetail.city}, {spotDetail.state}, {spotDetail.country}</p>
+        <div>
+          {spotDetail.SpotImages.map((image, index) => (
+            <img src={image.url} alt={`${spotDetail.name}-${index}`} key={index} />
+          ))}
+        </div>
+        <p>{spotDetail.description}</p>
+        <p>${spotDetail.price} per night</p>
       </>
     );
 
 
+
 }
 
-export default SpotDetails;
+export default SpotDetail
