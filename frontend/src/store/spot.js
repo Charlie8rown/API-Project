@@ -56,31 +56,23 @@ export const getOneSpot = (spotId) => async (dispatch) => {
 };
 
 
-export const createSpots = (newSpotInfo, previewImage) => async (dispatch) => {
-  const res = await csrfFetch("/api/spots", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newSpotInfo),
-  });
-  console.log("Creat a spot thunk");
+export const createSpots = ({address, city, state, country, lat, lng, name, description, price, url, preview}) => async (dispatch) => {
+  const response = await csrfFetch('/api/spots', {
+      method: 'POST',
+      body: JSON.stringify({
+          address, city, state, country, lat, lng, name, description, price
+      })
+  })
 
-  if (res.ok) {
-    const newSpot = await res.json();
-    console.log("newSpot :", newSpot);
-
-    const res2 = await csrfFetch(`/api/spots/${newSpot.id}/images`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: previewImage, preview: true }),
-    });
-
-    if (res2.ok) {
-      const newSpotImage = await res2.json();
-      newSpot.previewImage = newSpotImage.url;
-
-      dispatch(createSpot(newSpot));
-      return newSpot;
-    }
+  if (response.ok) {
+      const spot = await response.json();
+      const imgResponse = await csrfFetch(`/api/spots/${spot.id}/images`, {
+          method: 'POST',
+          body: JSON.stringify({
+              url, preview
+          })
+      })
+      if (imgResponse.ok) dispatch(createSpot(spot));
   }
 };
 
@@ -114,8 +106,8 @@ export default function spotReducer (state = initialState, action) {
       return newState
     }
     case CREATE_SPOT: {
-      console.log("Create a spot reducer");
-      newState.allSpots = {...state.allSpots, [action.spot.id]: action.spot}
+      const newState = {...state};
+      newState[action.payload.id] = action.payload;
       return newState;
     }
     default:
