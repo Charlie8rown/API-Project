@@ -16,10 +16,10 @@ const SpotDetails = () => {
     dispatch(getOneSpot(spotId));
   }, [dispatch, spotId]);
 
-  if (!Object.values(spot).length) return <h1>Loading ...</h1>;
+  // if (!Object.values(spot).length) return <h1>Loading ...</h1>;
 
   return (
-    <div>Hello there
+    <div>
       <h1>{spot.name}</h1>
       <h2>{spot.city}, {spot.state}, {spot.country}</h2>
       <div>{spot.SpotImages.length > 0 ? (<img src={spot.SpotImages[0].url} alt="none" />) : (<img src={comingSoon} alt="" />)}</div>
