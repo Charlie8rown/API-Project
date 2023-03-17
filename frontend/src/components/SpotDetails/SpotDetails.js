@@ -1,32 +1,83 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getOneSpot } from '../../store/spot';
-// import OpenModalButton from '../OpenModalButton';
-import comingSoon from "../../asset/image_coming_soon.jpeg";
-import "./SpotDetails.css";
+import React, { useEffect, useState} from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { getOneSpot } from "../../store/spot"
+import { useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import "./SpotDetails.css"
 
-const SpotDetails = () => {
-  const { spotId } = useParams();
-  const spot = useSelector((state) => state.spot.singleSpot);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
 
-    dispatch(getOneSpot(spotId));
-  }, [dispatch, spotId]);
 
-  // if (!Object.values(spot).length) return <h1>Loading ...</h1>;
+const SpotDetails = ({currentSpot}) => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const {spotId} = useParams();
+    const [isLoaded, setIsLoaded] = useState(false);
+    const loadedSpot = useSelector((state) => state.spot);
+    const singleSpot = useSelector(state => state.spot);
+    const images = useSelector(state => state.spot.SpotImages);
+    const [spot, setSpot] = useState(useSelector((state) => state.spot));
 
-  return (
-    <div>
-      <h1>{spot.name}</h1>
-      <h2>{spot.city}, {spot.state}, {spot.country}</h2>
-      <div>{spot.SpotImages.length > 0 ? (<img src={spot.SpotImages[0].url} alt="none" />) : (<img src={comingSoon} alt="" />)}</div>
-      <div>{spot.SpotImages.length > 1 ? (<img src={spot.SpotImages[1].url} alt="none" />) : (<img src={comingSoon} alt="" />)}{spot.SpotImages.length > 2 ? (<img src={spot.SpotImages[2].url} alt=""/>) : (<img src={comingSoon} alt="" />)}</div>
-      <div>{spot.SpotImages.length > 3 ? (<img id="image-3" src={spot.SpotImages[3].url} alt="none" />) : (<img src={comingSoon} alt="" />)}{spot.SpotImages.length > 4 ? (<img id="image-4"src={spot.SpotImages[4].url} alt="none" />) : (<img src={comingSoon} alt="" />)}</div>
-    </div>
-  );
+    useEffect(() => {
+        const initialLoad = () =>
+        {
+        const newSpot = dispatch(getOneSpot(spotId))
+        getOneSpot(newSpot);
+        }
+        setIsLoaded(false)
+        initialLoad()
+        setIsLoaded(true)
+    }, [dispatch])
+
+
+    useEffect(() => {
+
+        setIsLoaded(false)
+        dispatch(getOneSpot(spotId))
+            .then(() => console.log("useEffect2"))
+            .then(() => setSpot(singleSpot))
+            .then(() => setIsLoaded(true))
+
+      }, [spotId, ]);
+
+    const updateHandler = (e) => {
+       history.push(`/spots/${spotId}/update`)
+    };
+
+
+    return (
+      <>
+        {isLoaded && (
+          <>
+            <h1>{currentSpot.name}</h1>
+            <div>
+              {currentSpot.city}, {currentSpot.state}, {currentSpot.country}
+            </div>
+
+            <div id="images-container">
+              <div id="spot-image-list">
+                {currentSpot.SpotImages &&
+                  currentSpot.SpotImages.map((img) => (
+                    <div className="image" key={img.id}>
+                      <img className="image" src={img.url} alt="img.jpg" />
+                    </div>
+                  ))}
+                {!currentSpot.SpotImages &&
+                  spot.SpotImages.map((img) => (
+                    <div className="image" key={img.id}>
+                      <img className="image" src={img.url} alt="img.jpg" />
+                    </div>
+                  ))}
+              </div>
+
+              <div>${currentSpot.price} night</div>
+            </div>
+          </>
+        )}
+      </>
+    );
+
+
 }
 
 export default SpotDetails;
