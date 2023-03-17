@@ -1,32 +1,43 @@
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect } from "react";
 import { getSpots } from "../../store/spot";
-import SpotIndex from "../SpotIndex/SpotIndex";
+import SpotDetails from "../SpotDetails/SpotDetails";
+import { NavLink, Route, Switch } from "react-router-dom"
 import "./Spots.css";
 
 
 const Spots = () => {
   const dispatch = useDispatch();
-  const allSpots = useSelector((state) => state.spot.allSpots);
-  const allSpotsArr = Object.values(allSpots);
-
+  const spotObj = useSelector((state) => state.spot.allSpots);
+  const spots = Object.values(spotObj);
   useEffect(() => {
-      dispatch(getSpots())
+    dispatch(getSpots());
   }, [dispatch]);
 
-  if (!allSpots) return null;
-
-  const spotItems = allSpotsArr.map((spot) => {
-      return <SpotIndex key={spot.id} spot={spot} />
-  })
-
   return (
-    <div className="spots-container">
-      <ul className="spots-wrapper">
-        {spotItems}
-      </ul>
+    <div className="cards-div">
+      {spots.map(({ id, name, previewImage, city, state, price }) => {
+        return (
+          <NavLink to={`/spots/${id}`} className="spot-nav-link" key={id}>
+            <img src={previewImage} alt={name} className="img" />
+            <div>
+              <p>
+                {city}, {state}
+              </p>
+            </div>
+            <p>${price} night</p>
+          </NavLink>
+        );
+      })}
+
+      <Switch>
+        <Route path="/spots/:id">
+          <SpotDetails spots={spots} />
+        </Route>
+      </Switch>
     </div>
-  )
+  );
+
 };
 
 export default Spots;
