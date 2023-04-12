@@ -46,6 +46,21 @@ function LoginFormModal() {
     }
   }, [credential, password])
 
+
+
+  const demoUserButton = (e) => {
+    setCredential('Demo-lition');
+    setPassword('password');
+    return dispatch(sessionActions.login({ credential, password }))
+      .then(closeModal)
+      .catch(
+        async (res) => {
+          const data = await res.json();
+          if (data && data.message) setErrors(data.message)
+        }
+      )
+  }
+
   return (
     <div className='login-outer-container'>
       <h1 className='login'>Log In</h1>
@@ -72,6 +87,7 @@ function LoginFormModal() {
         />
         <br />
         <button className='login-button' id={login} type="submit" disabled={disabledButton()}>Log In</button>
+        <button onClick={demoUserButton} className='demo-user-button'>Demo User</button>
       </form>
     </div>
   );

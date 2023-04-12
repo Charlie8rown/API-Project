@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useModal } from "../../context/Modal";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 import * as sessionActions from "../../store/session";
+import { useModal } from "../../context/Modal";
 import './SignupForm.css';
 
-
-function SignupFormModal() {
+function SignupFormPage() {
   const dispatch = useDispatch();
+  const sessionUser = useSelector((state) => state.session.user);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -14,7 +15,9 @@ function SignupFormModal() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState([]);
+  const [signUp, setSignUp] = useState()
   const { closeModal } = useModal();
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,83 +27,100 @@ function SignupFormModal() {
         .then(closeModal)
         .catch(async (res) => {
           const data = await res.json();
-          if (data && data.errors) setErrors(data.errors);
+          const errors = Object.values(data.errors)
+          return setErrors(errors)
         });
     }
     return setErrors(['Confirm Password field must be the same as the Password field']);
   };
 
+  const disabledButton = () => {
+    if (!email.length || !username.length || !firstName.length || !lastName.length || !password.length || !confirmPassword.length) {
+      return true;
+    } else if (username.length < 4 || password.length < 6 || password !== confirmPassword) {
+      return true;
+    }
+    return false;
+  }
+
+  useEffect(() => {
+    if (!email.length || !username.length || !firstName.length || !password.length || !confirmPassword.length) {
+      setSignUp('submit-disabled')
+    }
+    else if (username.length < 4 || password.length < 6 || password !== confirmPassword) {
+      setSignUp('submit-disabled')
+    } else {
+      setSignUp('submit-enabled')
+    }
+  }, [email, username, firstName, lastName, password, confirmPassword])
+
+  if (sessionUser) return <Redirect to="/" />;
+
   return (
-    <>
-      <h1 className="signup-header">Sign Up</h1>
-      <form className="signup-form" onSubmit={handleSubmit}>
-        <ul>
+    <div className='signup-outer-container'>
+      <h1>Sign Up</h1>
+      <form className='signup-inner-container' onSubmit={handleSubmit}>
+        <ul className='errors'>
           {errors.map((error, idx) => <li key={idx}>{error}</li>)}
         </ul>
-        <label>
-          {/* Email */}
-          <input
-            placeholder="Email"
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          {/* Username */}
-          <input
-            placeholder="Username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          {/* First Name */}
-          <input
-            placeholder="First Name"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          {/* Last Name */}
-          <input
-            placeholder="Last Name"
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          {/* Password */}
-          <input
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          {/* Confirm Password */}
-          <input
-            placeholder="Confirm Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit">Sign Up</button>
+        <input
+          type="text"
+          className='form-input'
+          value={email}
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          className='form-input'
+          value={username}
+          placeholder='Username'
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          className='form-input'
+          value={firstName}
+          placeholder='First Name'
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          className='form-input'
+          value={lastName}
+          placeholder='Last Name'
+          onChange={(e) => setLastName(e.target.value)}
+          required
+        />
+        <br />
+        <input
+          type="password"
+          className='form-input'
+          value={password}
+          placeholder='Password'
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <br />
+        <input
+          type="password"
+          className='form-input'
+          value={confirmPassword}
+          placeholder='Confirm Password'
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        <br />
+        <button className='signup-button' id={signUp} type="submit" disabled={disabledButton()}>Sign Up</button>
       </form>
-    </>
+    </div>
   );
 }
 
-export default SignupFormModal;
+export default SignupFormPage;
