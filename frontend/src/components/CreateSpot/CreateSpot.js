@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { createSpots, getOneSpot  } from "../../store/spot";
-import "./CreateSpot.css";
+import "./createSpot.css";
 
 // creating a spot
 
