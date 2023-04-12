@@ -37,7 +37,6 @@ const Spots = () => {
       </Switch>
     </div>
   );
-
 };
 
 export default Spots;

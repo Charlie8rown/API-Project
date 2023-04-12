@@ -1,7 +1,7 @@
 import { csrfFetch } from "./csrf";
 
 const LOAD_ALL = "/spots/loadAll";
-const LOAD_ONE_SPOT = "/spots/loadOne";
+const LOAD_ONE_SPOT = "/spots/loadOneSpot";
 const CREATE_SPOT = "/spots/createSpot";
 // const UPDATE_SPOT = "/spots/updateSpot";
 const DELETE = "/spots/deleteSpot";
@@ -12,9 +12,9 @@ const loadAll = (spots) => ({
   payload: spots
 })
 
-const loadOne = (spot) => ({
+const loadOne = (spotId) => ({
   type: LOAD_ONE_SPOT,
-    payload: spot
+   spotId
 })
 
 const createSpot = (spot) => ({
@@ -46,31 +46,49 @@ export const getSpots = (payload) => async dispatch => {
 };
 
 export const getOneSpot = (spotId) => async (dispatch) => {
-  const response = await csrfFetch(`/api/spots/${spotId}`)
-  const spotData = await response.json()
-  dispatch(loadOne(spotData))
-  return spotData
+  const response = await fetch(`/api/spots/${spotId}`)
+  if(response.ok){
+    const spotData = await response.json()
+    dispatch(loadOne(spotData))
+  }
 }
 
 
-export const createSpots = ({address, city, state, country, lat, lng, name, description, price, url, preview}) => async (dispatch) => {
-  const response = await csrfFetch('/api/spots/', {
-      method: 'POST',
-      body: JSON.stringify({
-        address, city, state, country, lat, lng, name, description, price
-      })
-  })
+// export const createSpots = ({address, city, state, country, lat, lng, name, description, price, url, preview}) => async (dispatch) => {
+//   const response = await csrfFetch('/api/spots/', {
+//       method: 'POST',
+//       body: JSON.stringify({
+//         address, city, state, country, lat, lng, name, description, price
+//       })
+//   })
+
+export const createSpots = ( createdSpot, createdImages) => async dispatch => {
+  const response = await csrfFetch('/api/spots', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(createdSpot)
+  });
+
+  let spotData = await response.json();
+  spotData['SpotImages'] = [];
 
   if (response.ok) {
-      const spot = await response.json();
-      console.log(spot);
-      const imgResponse = await csrfFetch(`/api/spots/${spot.id}/images`, {
+    for (let i = 0; i < createdImages.length; i++) {
+      let res = await csrfFetch(`/api/spots/${spotData.id}/images`, {
         method: 'POST',
-        body: JSON.stringify({
-            url, preview
-        })
-      })
-      if (imgResponse.ok) dispatch(createSpot(spot));
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(createdImages[i])
+      });
+
+      let Image = await res.json();
+
+      if (res.ok) {
+        spotData.SpotImages.push(Image)
+      }
+    }
+    await dispatch(createSpot(spotData))
+
+    return spotData;
   }
 };
 
@@ -94,19 +112,22 @@ export const removeSpot = (id) => async (dispatch) => {
 const initialState = {allSpots: {}, singleSpot: {}};
 
 export default function spotReducer (state = initialState, action) {
-  let newState = {...state}
+  let newState
 
   switch (action.type) {
     case LOAD_ALL:
-      newState = { allSpots: {}, singleSpot: {} };
-      action.spots.Spots.forEach((spot) => {
-        newState.allSpots[spot.id] = spot;
+      newState = { ...state };
+      const allSpots = {}
+      action.payload.Spots.forEach((spot) => {
+        allSpots[spot.id] = spot;
       });
+      newState.allSpots = allSpots
       return newState;
 
     case LOAD_ONE_SPOT:
+      console.log("load one spot", action.spotId);
       newState = { ...state };
-      newState.singleSpot = action.payload;
+      newState.singleSpot = action.spotId;
       return newState;
 
     case CREATE_SPOT: {

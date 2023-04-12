@@ -33,12 +33,14 @@ function Navigation({ isLoaded }){
     <ul>
       <li>
         <NavLink exact to="/">Home</NavLink>
+        {/* <NavLink to="/spots/new">Create New Spot</NavLink> */}
       </li>
       {isLoaded && (
         <li>
-          <NavLink to="/spots/new">Add a Spot</NavLink>
+          <div>
+            <NavLink exact to="/spots/new">Create New Spot</NavLink>
+          </div>
           <ProfileButton user={sessionUser} />
-          {/* <NavLink to="/spots/new">Add a Spot</NavLink> {isLoaded && (<ProfileButton user={sessionUser} />)} */}
         </li>
       )}
     </ul>
