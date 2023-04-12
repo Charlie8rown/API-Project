@@ -8,16 +8,17 @@ import './SpotDetails.css'
 const SpotDetail = () => {
     const { spotId } = useParams()
     const dispatch = useDispatch()
-    const spotDetail = useSelector(state => state.spot.singleSpot)
-
+    const spotDetail = useSelector(state => state?.spot?.singleSpot)
+    console.log("spot Detail here", spotDetail);
     useEffect(() => {
-        dispatch(getOneSpot(spotId))
+      dispatch(getOneSpot(spotId))
     }, [dispatch, spotId])
 
 
-    if (!spotDetail || !spotDetail.name) {
-        return <h1>No information for this spot at the moment. Please come back at later time.</h1>
+    if (!spotDetail || !spotDetail.name || !spotDetail.SpotImages) {
+      return <h1>No information for this spot at the moment. Please come back at later time.</h1>
     }
+
 
     return (
       <>

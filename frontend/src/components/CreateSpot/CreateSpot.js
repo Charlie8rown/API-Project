@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { getOneSpot  } from "../../store/spot";
+import { createSpots, getOneSpot  } from "../../store/spot";
 import "./CreateSpot.css";
 
 // creating a spot
@@ -38,7 +38,46 @@ const CreateSpotForm = () => {
       previewImage,
     };
 
-    const spotImages = [imgUrl1, imgUrl2, imgUrl3, imgUrl4].filter(Boolean);
+    let imageList =[];
+    if (previewImage) {
+        const newImage = {
+            preview: true,
+            url: previewImage
+        };
+        imageList.push(newImage)
+    }
+
+    if (imgUrl1) {
+        const addImage1 = {
+            preview: false,
+            url: imgUrl1
+        }
+        imageList.push(addImage1)
+    };
+    if (imgUrl2) {
+        const addImage2 = {
+            preview: false,
+            url: imgUrl2
+        }
+        imageList.push(addImage2)
+    };
+    if (imgUrl3) {
+        const addImage3 = {
+            preview: false,
+            url: imgUrl3
+        }
+        imageList.push(addImage3)
+    };
+    if (imgUrl4) {
+        const addImage4 = {
+            preview: false,
+            url: imgUrl4
+        }
+        imageList.push(addImage4)
+    }
+
+
+    // const spotImages = [imgUrl1, imgUrl2, imgUrl3, imgUrl4].filter(Boolean);
 
     const errors = {};
 
@@ -123,14 +162,14 @@ const CreateSpotForm = () => {
     }
 
     setErrors(errors);
-    setSubmit(true);
+    // setSubmit(true);
 
     if (Object.keys(errors).length === 0) {
       try {
         const newestSpot = await dispatch(
-          getOneSpot.createSpot(newSpot, spotImages)
+          createSpots(newSpot, imageList)
         );
-        setSubmit(false);
+        // setSubmit(false);
         history.push(`/spots/${newestSpot.id}`);
       } catch (error) {
         console.log(error);
@@ -138,23 +177,23 @@ const CreateSpotForm = () => {
     }
   };
 
-  if (Object.keys(errors).length > 0) {
-    window.alert("Fix errors before creating spot!");
-    return;
-  }
+  // if (Object.keys(errors).length > 0) {
+  //   window.alert("Fix errors before creating spot!");
+  //   return;
 
-  setCountry("");
-  setAddress("");
-  setCity("");
-  setState("");
-  setDescription("");
-  setName("");
-  setPrice("");
-  setPreviewImage("");
-  setimgUrl1("");
-  setimgUrl2("");
-  setimgUrl3("");
-  setimgUrl4("");
+  //   // setCountry("");
+  //   // setAddress("");
+  //   // setCity("");
+  //   // setState("");
+  //   // setDescription("");
+  //   // setName("");
+  //   // setPrice("");
+  //   // setPreviewImage("");
+  //   // setimgUrl1("");
+  //   // setimgUrl2("");
+  //   // setimgUrl3("");
+  //   // setimgUrl4("");
+  // }
 
   return (
     <div className="create-spot-form-container">

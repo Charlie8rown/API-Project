@@ -65,11 +65,11 @@ function ProfileButton({ user }) {
             <li>
               <button id="logout" onClick={logout}>Log Out</button>
             </li>
-            <li>
+            {/* <li>
               <NavLink to='/addSpotForm'
               onClick={closeMenu}
               >List a spot</NavLink>
-            </li>
+            </li> */}
           </>
         ) : (
           <>

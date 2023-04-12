@@ -35,29 +35,28 @@ import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation/Navigation";
 import Spots from "./components/Spots/Spots";
 import SpotDetails from "./components/SpotDetails/SpotDetails";
+import CreateSpot from "./components/CreateSpot/CreateSpot";
+import SignupFormModal from "./components/SignupFormModal/SignupForm";
 
-function App() {
+  function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
-
-  const isLoggedIn = useSelector(state => state.session.user != null);
-
   useEffect(() => {
-    if (!isLoggedIn)  {
     dispatch(sessionActions.restoreUser()).then(() => setIsLoaded(true));
-    } else {
-      setIsLoaded(true);
-    }
-  }, [dispatch, isLoggedIn]);
+  }, [dispatch]);
 
   return (
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
         <Switch>
+          <Route path="/signup">
+            <SignupFormModal />
+          </Route>
           <Route exact path="/">
             <Spots/>
           </Route>
+          <Route exact path="/spots/new" component={CreateSpot} />
           <Route exact path="/spots/:spotId">
             <SpotDetails />
           </Route>
