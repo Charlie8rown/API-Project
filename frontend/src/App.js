@@ -37,6 +37,7 @@ import Spots from "./components/Spots/Spots";
 import SpotDetails from "./components/SpotDetails/SpotDetails";
 import CreateSpot from "./components/CreateSpot/CreateSpot";
 import ManageSpots from "./components/ManageSpots/manageSpots";
+import EditSpot from "./components/EditSpot/editSpot";
 // import SignupForm from "./components/SignupFormModal/SignupForm";
 // import LoginForm from "./components/LoginFormModal/LoginForms";
 
@@ -61,9 +62,9 @@ import ManageSpots from "./components/ManageSpots/manageSpots";
           <Route exact path='/spots/current'>
             <ManageSpots />
           </Route>
-          {/* <Route path='/spots/:id/edit'>
+          <Route path='/spots/:id/edit'>
             <EditSpot />
-          </Route> */}
+          </Route>
           <Route path='/spots/:spotId'>
             <SpotDetails />
           </Route>
