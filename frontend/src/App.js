@@ -36,8 +36,9 @@ import Navigation from "./components/Navigation/Navigation";
 import Spots from "./components/Spots/Spots";
 import SpotDetails from "./components/SpotDetails/SpotDetails";
 import CreateSpot from "./components/CreateSpot/CreateSpot";
-// import SignupFormModal from "./components/SignupFormModal/SignupForm";
-// import LoginFormPage from "./components/LoginFormModal/LoginForms";
+import ManageSpots from "./components/ManageSpots/manageSpots";
+// import SignupForm from "./components/SignupFormModal/SignupForm";
+// import LoginForm from "./components/LoginFormModal/LoginForms";
 
   function App() {
   const dispatch = useDispatch();
@@ -57,9 +58,9 @@ import CreateSpot from "./components/CreateSpot/CreateSpot";
           <Route path='/spots/new'>
             <CreateSpot />
           </Route>
-          {/* <Route exact path='/spots/current'>
+          <Route exact path='/spots/current'>
             <ManageSpots />
-          </Route> */}
+          </Route>
           {/* <Route path='/spots/:id/edit'>
             <EditSpot />
           </Route> */}

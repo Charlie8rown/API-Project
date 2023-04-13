@@ -98,15 +98,18 @@ export const createSpots = ( createdSpot, createdImages) => async (dispatch) => 
   }
 };
 
-export const removeSpot = (id) => async (dispatch) => {
+export const removeSpot = (id) => async dispatch => {
   const response = await csrfFetch(`/api/spots/${id}`, {
     method: "DELETE",
   })
 
   if (response.ok) {
+    const  deleted = await response.json();
+    console.log("this should delete", deleted);
     dispatch(deleteSpot(id));
+    // dispatch(currUserSpots);
+    return deleted;
   }
-  return response.json;
 };
 
 // export const putSpot = (payload => async dispatch => {
@@ -140,7 +143,6 @@ export default function spotReducer (state = initialState, action) {
       return newState;
 
     case LOAD_ONE_SPOT:
-      // console.log("load one spot", action.spotId);
       newState = { ...state };
       newState.singleSpot = action.spotId;
       return newState;
@@ -157,16 +159,14 @@ export default function spotReducer (state = initialState, action) {
       action.payload.Spots.forEach(spot => {
         currUserSpotCopies[spot.id] = spot
       });
-      newState.allUserSpots =currUserSpotCopies
+      newState.allUserSpots = currUserSpotCopies
       return newState
     }
 
     case DELETE: {
-      const newState = { ...state };
-      const spotId = action.payload;
-      console.log("payload", action.payload);
+      const newState = { ...state, allUserSpots: {...state.allUserSpots} };
 
-      delete newState[spotId];
+      delete newState.allUserSpots[action.spotId];
 
       return newState;
     }
