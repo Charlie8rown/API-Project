@@ -3,7 +3,7 @@ import { csrfFetch } from "./csrf";
 const LOAD_ALL = "/spots/loadAll";
 const LOAD_ONE_SPOT = "/spots/loadOneSpot";
 const CREATE_SPOT = "/spots/createSpot";
-// const UPDATE_SPOT = "/spots/updateSpot";
+const UPDATE_SPOT = "/spots/updateSpot";
 const DELETE = "/spots/deleteSpot";
 const USERS_SPOTS =  "/spots/allUserSpots";
 
@@ -23,10 +23,10 @@ const createSpot = (spot) => ({
   payload: spot
 })
 
-// const updateSpot = (spot) => ({
-//   type: UPDATE_SPOT,
-//   spot
-// })
+const updateSpot = (spot) => ({
+  type: UPDATE_SPOT,
+  spot
+})
 
 const deleteSpot = (spotId) => ({
   type: DELETE,
@@ -112,11 +112,6 @@ export const removeSpot = (id) => async dispatch => {
   }
 };
 
-// export const putSpot = (payload => async dispatch => {
-
-//   return response
-// })
-
 export const currUserSpots = () => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/current`)
   const spots = await response.json()
@@ -124,6 +119,20 @@ export const currUserSpots = () => async (dispatch) => {
   dispatch(allUserSpots(spots))
   return spots;
 };
+
+export const updatingSpot = (spots) => async (dispatch) => {
+  const response = await csrfFetch(`/api/spots/${spots.id}`, {
+    method: "PUT",
+    headers: { 'constent-Type': 'application/json' },
+    body: JSON.stringify(spots)
+  })
+
+  if (response.ok) {
+    const data = await response.json()
+    dispatch(updateSpot(data))
+    return data
+  }
+}
 
 
 // Spot Reducer
@@ -162,6 +171,10 @@ export default function spotReducer (state = initialState, action) {
       newState.allUserSpots = currUserSpotCopies
       return newState
     }
+
+    case UPDATE_SPOT:
+      let  updateCurrSpot = {...state.singleSpot, ...action.payload}
+      return {...state,singleSPot: updateCurrSpot}
 
     case DELETE: {
       const newState = { ...state, allUserSpots: {...state.allUserSpots} };
