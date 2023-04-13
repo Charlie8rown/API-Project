@@ -5,6 +5,7 @@ const LOAD_ONE_SPOT = "/spots/loadOneSpot";
 const CREATE_SPOT = "/spots/createSpot";
 // const UPDATE_SPOT = "/spots/updateSpot";
 const DELETE = "/spots/deleteSpot";
+const USERS_SPOTS =  "/spots/allUserSpots";
 
 // Action Creators
 const loadAll = (spots) => ({
@@ -32,10 +33,15 @@ const deleteSpot = (spotId) => ({
   spotId
 })
 
+const allUserSpots = (spots) => ({
+  type: USERS_SPOTS,
+  payload: spots
+})
+
 
 
 // Thunk Actions
-export const getSpots = (payload) => async dispatch => {
+export const getSpots = (payload) => async (dispatch) => {
   const res = await csrfFetch("/api/spots");
 
   if(res.ok) {
@@ -62,7 +68,7 @@ export const getOneSpot = (spotId) => async (dispatch) => {
 //       })
 //   })
 
-export const createSpots = ( createdSpot, createdImages) => async dispatch => {
+export const createSpots = ( createdSpot, createdImages) => async (dispatch) => {
   const response = await csrfFetch('/api/spots', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -92,15 +98,18 @@ export const createSpots = ( createdSpot, createdImages) => async dispatch => {
   }
 };
 
-export const removeSpot = (id) => async (dispatch) => {
+export const removeSpot = (id) => async dispatch => {
   const response = await csrfFetch(`/api/spots/${id}`, {
     method: "DELETE",
   })
 
   if (response.ok) {
+    const  deleted = await response.json();
+    console.log("this should delete", deleted);
     dispatch(deleteSpot(id));
+    // dispatch(currUserSpots);
+    return deleted;
   }
-  return response.json;
 };
 
 // export const putSpot = (payload => async dispatch => {
@@ -108,8 +117,17 @@ export const removeSpot = (id) => async (dispatch) => {
 //   return response
 // })
 
+export const currUserSpots = () => async (dispatch) => {
+  const response = await csrfFetch(`/api/spots/current`)
+  const spots = await response.json()
+
+  dispatch(allUserSpots(spots))
+  return spots;
+};
+
+
 // Spot Reducer
-const initialState = {allSpots: {}, singleSpot: {}};
+const initialState = {allSpots: {}, singleSpot: {}, allUserSpots: {}};
 
 export default function spotReducer (state = initialState, action) {
   let newState
@@ -125,7 +143,6 @@ export default function spotReducer (state = initialState, action) {
       return newState;
 
     case LOAD_ONE_SPOT:
-      console.log("load one spot", action.spotId);
       newState = { ...state };
       newState.singleSpot = action.spotId;
       return newState;
@@ -136,12 +153,20 @@ export default function spotReducer (state = initialState, action) {
       return newState;
     }
 
-    case DELETE: {
+    case USERS_SPOTS: {
       const newState = { ...state };
-      const spotId = action.payload;
-      console.log("payload", action.payload);
+      let currUserSpotCopies = {};
+      action.payload.Spots.forEach(spot => {
+        currUserSpotCopies[spot.id] = spot
+      });
+      newState.allUserSpots = currUserSpotCopies
+      return newState
+    }
 
-      delete newState[spotId];
+    case DELETE: {
+      const newState = { ...state, allUserSpots: {...state.allUserSpots} };
+
+      delete newState.allUserSpots[action.spotId];
 
       return newState;
     }

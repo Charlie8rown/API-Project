@@ -9,7 +9,8 @@ const SpotDetail = () => {
     const { spotId } = useParams()
     const dispatch = useDispatch()
     const spotDetail = useSelector(state => state?.spot?.singleSpot)
-    console.log("spot Detail here", spotDetail);
+
+
     useEffect(() => {
       dispatch(getOneSpot(spotId))
     }, [dispatch, spotId])
@@ -19,6 +20,11 @@ const SpotDetail = () => {
       return <h1>No information for this spot at the moment. Please come back at later time.</h1>
     }
 
+    const rating = (rating) => {
+      if (rating < 1) {
+        return <p>NEW</p>;
+      } else return <p>{spotDetail.avgStarRating}</p>
+    };
 
     return (
       <>
@@ -29,12 +35,11 @@ const SpotDetail = () => {
             <img src={image.url} alt={`${spotDetail.name}-${index}`} key={index} />
           ))}
         </div>
-        <p>{spotDetail.description}</p>
-        <p>${spotDetail.price} per night</p>
+        <div>{spotDetail.description}</div>
+        <div>${spotDetail.price} per night</div>
+        <div>{rating(spotDetail.avgStarRating)}</div>
       </>
     );
-
-
 
 }
 

@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux';
-import { useHistory } from "react-router-dom";
-import * as sessionActions from '../../store/session';
-import OpenModalMenuItem from './OpenModalMenuItem';
+import { useDispatch } from "react-redux";
+import { NavLink, useHistory } from "react-router-dom";
+import * as sessionActions from "../../store/session";
 import OpenModalButton from "../OpenModalButton";
-import LoginFormModal from '../LoginFormModal/LoginForms';
-import SignupFormModal from '../SignupFormModal/SignupForm';
-import CreateSpot from "../CreateSpot/CreateSpot";
-import { NavLink } from "react-router-dom";
+import LoginForm from "../LoginFormModal/LoginForms";
+import SignupForm from "../SignupFormModal/SignupForm";
 import "./Navigation.css";
 
 function ProfileButton({ user }) {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
@@ -29,64 +27,55 @@ function ProfileButton({ user }) {
       }
     };
 
-    document.addEventListener('click', closeMenu);
+    document.addEventListener("click", closeMenu);
 
     return () => document.removeEventListener("click", closeMenu);
   }, [showMenu]);
 
-  const closeMenu = (e) => {
-    setShowMenu(false)
-  }
+  const closeMenu = () => setShowMenu(false);
 
   const logout = (e) => {
     e.preventDefault();
     dispatch(sessionActions.logout());
+    closeMenu();
+    history.push("/");
   };
-
-  const demoLogin = (e) => {
-    e.preventDefault();
-    dispatch(sessionActions.login({ credential: "Demo-lition", password: "password" }))
-  }
 
   const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
 
   return (
     <>
-      <button className="user-button" onClick={openMenu}>
-        <i className="fa-solid fa-bars"></i>
+      <button className="button" onClick={openMenu}>
         <i className="fas fa-user-circle" />
+        <i className="fa-solid fa-bars-staggered" />
       </button>
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <li>{user.username}</li>
-            <li>{user.firstName} {user.lastName}</li>
-            <li>{user.email}</li>
-            <li>
-              <button id="logout" onClick={logout}>Log Out</button>
-            </li>
-            {/* <li>
-              <NavLink to='/addSpotForm'
-              onClick={closeMenu}
-              >List a spot</NavLink>
-            </li> */}
+            <ul>Hello, {user.firstName}</ul>
+            <ul>{user.email}</ul>
+            <NavLink to="/spots/current" id="manage-spots">
+              Manage Spots
+            </NavLink>
+            <ul>
+              <button onClick={logout}>Log Out</button>
+            </ul>
           </>
         ) : (
           <>
-            <li className="profile-item">
+            <li>
               <OpenModalButton
                 buttonText="Log In"
-                modalComponent={<LoginFormModal />}
+                onButtonClick={closeMenu}
+                modalComponent={<LoginForm />}
               />
             </li>
-            <li className="profile-item">
+            <li>
               <OpenModalButton
                 buttonText="Sign Up"
-                modalComponent={<SignupFormModal />}
+                onButtonClick={closeMenu}
+                modalComponent={<SignupForm />}
               />
-            </li>
-            <li className="profile-item">
-              <button onClick={demoLogin}>Demo Login</button>
             </li>
           </>
         )}
