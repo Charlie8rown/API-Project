@@ -15,7 +15,7 @@ const loadAll = (spots) => ({
 
 const loadOne = (spotId) => ({
   type: LOAD_ONE_SPOT,
-   spotId
+  spotId
 })
 
 const createSpot = (spot) => ({
@@ -120,17 +120,25 @@ export const currUserSpots = () => async (dispatch) => {
   return spots;
 };
 
-export const updatingSpot = (spots) => async (dispatch) => {
-  const response = await csrfFetch(`/api/spots/${spots.id}`, {
+export const updatingSpot = (spots, spotId, imageArr) => async (dispatch) => {
+  const response = await csrfFetch(`/api/spots/${spotId}`, {
     method: "PUT",
-    headers: { 'constent-Type': 'application/json' },
+    headers: { 'content-Type': 'application/json' },
     body: JSON.stringify(spots)
-  })
+  });
 
   if (response.ok) {
     const data = await response.json()
-    dispatch(updateSpot(data))
-    return data
+    for (let image of imageArr) {
+      if (image.url) {
+        await csrfFetch(`/api/spots/${spotId}/images`, {
+          method: "PUT",
+          headers: { 'Content-Type': 'application/json'},
+          body: JSON.stringify(image)
+        });
+      };
+    }
+    return data;
   }
 }
 
@@ -142,7 +150,7 @@ export default function spotReducer (state = initialState, action) {
   let newState
 
   switch (action.type) {
-    case LOAD_ALL:
+    case LOAD_ALL:{
       newState = { ...state };
       const allSpots = {}
       action.payload.Spots.forEach((spot) => {
@@ -150,11 +158,13 @@ export default function spotReducer (state = initialState, action) {
       });
       newState.allSpots = allSpots
       return newState;
+    }
 
-    case LOAD_ONE_SPOT:
+    case LOAD_ONE_SPOT:{
       newState = { ...state };
       newState.singleSpot = action.spotId;
       return newState;
+    }
 
     case CREATE_SPOT: {
       const newState = { ...state };
@@ -172,9 +182,13 @@ export default function spotReducer (state = initialState, action) {
       return newState
     }
 
-    case UPDATE_SPOT:
-      let  updateCurrSpot = {...state.singleSpot, ...action.payload}
+    case UPDATE_SPOT:{
+      // const newState = { ...state };
+      // newState[action.payload.id] = action.payload;
+      // return newState;
+      let  updateCurrSpot = {...state, ...action.payload}
       return {...state,singleSPot: updateCurrSpot}
+    }
 
     case DELETE: {
       const newState = { ...state, allUserSpots: {...state.allUserSpots} };

@@ -12,7 +12,6 @@ const ManageSpots = () => {
   const spots = Object.values(useSelector((state) => state.spot?.allUserSpots));
   // const userSpots = useSelector((State) => State.spot.allUserSpots);
   // const spots = Object.values(userSpots);
-  console.log("here", spots);
   const user = useSelector((state) => state.session.user);
   const [errors, setErrors] = useState([]);
 
