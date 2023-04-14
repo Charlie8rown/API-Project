@@ -197,7 +197,7 @@ const CreateSpotForm = () => {
 
   return (
     <div className="create-spot-form-container">
-      <h1>Create a Spot</h1>
+      <h1>Create a New Spot</h1>
       <form onSubmit={handleSubmit}>
         <label>
           Country:
