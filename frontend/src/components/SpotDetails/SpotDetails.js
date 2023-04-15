@@ -11,11 +11,13 @@ import { getAllReviews } from "../../store/review";
 const SpotDetails = () => {
   const { spotId } = useParams();
   const dispatch = useDispatch();
-  const spotDetail = useSelector((state) => state?.spot?.singleSpot);
+  const spotDetail = useSelector((state) => state.spot.singleSpot);
   const currUser = useSelector((state) => state.session.user);
   const spotReviews = useSelector((state) => state.reviews.spot);
   const arr = Object.values(spotReviews).reverse();
   const currUserReviewId = Object.values(spotReviews).map((review) => review);
+
+  console.log("user", currUser);
 
 
 
@@ -43,8 +45,7 @@ const SpotDetails = () => {
   if (!spotDetail || !spotDetail.name || !spotDetail.SpotImages) {
     return (
       <h1>
-        No information for this spot at the moment. Please come back at later
-        time.
+        No information for this spot at the moment. Please come back at later time.
       </h1>
     );
   }

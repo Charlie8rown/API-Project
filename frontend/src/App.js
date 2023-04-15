@@ -62,7 +62,7 @@ import EditSpot from "./components/EditSpot/editSpot";
           <Route exact path='/spots/current'>
             <ManageSpots />
           </Route>
-          <Route path='/spots/:id/edit'>
+          <Route path='/spots/:spotId/edit'>
             <EditSpot />
           </Route>
           <Route path='/spots/:spotId'>

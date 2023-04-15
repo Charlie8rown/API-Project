@@ -3,7 +3,7 @@ import { currUserSpots } from "../../store/spot";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { DeleteSpot } from "../DeleteSpot/deletespot";
-import OpenModalButton, { openModal } from "../OpenModalButton/index";
+import OpenModalButton from "../OpenModalButton/index";
 import "./ManageSpots.css";
 import SpotDetail from "../SpotDetails/SpotDetails";
 
@@ -17,7 +17,7 @@ const ManageSpots = () => {
 
   useEffect(() => {
     if (user) {
-      dispatch(currUserSpots());
+      dispatch(currUserSpots(user.id));
     }
   }, [dispatch, user]);
 
