@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useHistory,
-  useParams,
-} from "react-router-dom/cjs/react-router-dom.min";
-import { currUserSpots, updatingSpot } from "../../store/spot";
+import { useHistory, useParams,} from "react-router-dom/cjs/react-router-dom.min";
+import { currUserSpots, updatingSpot, getOneSpot } from "../../store/spot";
 import "./EditSpot.css";
 
 export const EditSpotForm = () => {
@@ -41,6 +38,15 @@ export const EditSpotForm = () => {
     }
   }, [spot]);
 
+  useEffect(() => {
+    dispatch(currUserSpots());
+    dispatch(getOneSpot(spotId));
+  }, [dispatch]);
+
+  if (!spot) {
+    return <h1>Loading...</h1>;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const err = [];
@@ -76,23 +82,23 @@ export const EditSpotForm = () => {
     if (!Number(price)) {
       err.push("Price is required");
     }
-
     if (!previewImage.length) {
-      err.push("preview Image required");
+      err.push("previewImageLength");
     } else if (
       !previewImage.endsWith(".jpg") &&
       !previewImage.endsWith(".jpeg") &&
       !previewImage.endsWith(".png")
     ) {
-      err.push("preview Image must be jpg, jpeg, png");
+      err.push("previewImageInvalid");
     }
+
     if (
       image1.length > 0 &&
       !image1.endsWith(".jpg") &&
       !image1.endsWith(".jpeg") &&
       !image1.endsWith(".png")
     ) {
-      err.push("Image Must be jpg, jpeg, png");
+      err.push("image1");
     }
     if (
       image2.length > 0 &&
@@ -100,7 +106,7 @@ export const EditSpotForm = () => {
       !image2.endsWith(".jpeg") &&
       !image2.endsWith(".png")
     ) {
-      err.push("Image Must be jpg, jpeg, png");
+      err.push("image2");
     }
     if (
       image3.length > 0 &&
@@ -108,7 +114,7 @@ export const EditSpotForm = () => {
       !image3.endsWith(".jpeg") &&
       !image3.endsWith(".png")
     ) {
-      err.push("Image Must be jpg, jpeg, png");
+      err.push("image3");
     }
     if (
       image4.length > 0 &&
@@ -116,7 +122,7 @@ export const EditSpotForm = () => {
       !image4.endsWith(".jpeg") &&
       !image4.endsWith(".png")
     ) {
-      err.push("Image Must be jpg, jpeg, png");
+      err.push("image4");
     }
 
     if (err.length) return setErrors(err);
@@ -131,7 +137,7 @@ export const EditSpotForm = () => {
       price,
     };
 
-    const ImageArr = [
+    const imageArr = [
       { url: previewImage, preview: true },
       { url: image1, preview: false },
       { url: image2, preview: false },
@@ -139,13 +145,14 @@ export const EditSpotForm = () => {
       { url: image4, preview: false },
     ];
 
-    await dispatch(updatingSpot(newUpdatedSpot, spotId, ImageArr));
-    history.push(`/spots/${spotId}`);
-  };
+    // await dispatch(updatingSpot(newUpdatedSpot, spotId, imageArr));
+    const updatedSpot = await dispatch(updatingSpot(newUpdatedSpot, spotId, imageArr));
+    if (updatedSpot) {
+      return history.push(`/spots/${spotId}`);
+    }
 
-  useEffect(() => {
-    dispatch(currUserSpots());
-  }, [dispatch]);
+
+  };
 
   return (
     <div>
@@ -160,11 +167,7 @@ export const EditSpotForm = () => {
           <div>
             <label>
               Country
-              {errors.includes("Country") ? (
-                <p>
-                  Country is required
-                </p>
-              ) : null}
+              {errors.includes("Country") ? <p>Country is required</p> : null}
             </label>
           </div>
           <input
@@ -177,11 +180,7 @@ export const EditSpotForm = () => {
           <div>
             <label>
               Street Address
-              {errors.includes("Address") ? (
-                <p>
-                  Address is required
-                </p>
-              ) : null}
+              {errors.includes("Address") ? <p>Address is required</p> : null}
             </label>
           </div>
           <input
@@ -195,11 +194,7 @@ export const EditSpotForm = () => {
             <div>
               <label>
                 City
-                {errors.includes("City") ? (
-                  <p>
-                    City is required
-                  </p>
-                ) : null}
+                {errors.includes("City") ? <p>City is required</p> : null}
               </label>
               <input
                 type="text"
@@ -212,11 +207,7 @@ export const EditSpotForm = () => {
             <div>
               <label>
                 State
-                {errors.includes("State") ? (
-                  <p>
-                    State is required
-                  </p>
-                ) : null}
+                {errors.includes("State") ? <p>State is required</p> : null}
               </label>
               <input
                 type="text"
@@ -241,9 +232,7 @@ export const EditSpotForm = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
           {errors.includes("Description") ? (
-            <p>
-              Description needs a minimum of 30 characters
-            </p>
+            <p>Description needs a minimum of 30 characters</p>
           ) : null}
         </div>
         <div>
@@ -271,9 +260,7 @@ export const EditSpotForm = () => {
             in search results.
           </p>
           <div>
-            <label>
-              ${" "}
-            </label>
+            <label>$ </label>
             <input
               name="price"
               type="number"
@@ -282,15 +269,9 @@ export const EditSpotForm = () => {
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
-          {errors.includes("Price") ? (
-            <p>
-              Price is required
-            </p>
-          ) : null}
+          {errors.includes("Price") ? <p>Price is required</p> : null}
           {errors.includes("Negative") ? (
-            <p>
-              Price must be greater than $0
-            </p>
+            <p>Price must be greater than $0</p>
           ) : null}
         </div>
         <div>
@@ -303,14 +284,10 @@ export const EditSpotForm = () => {
             onChange={(e) => setPreviewImage(e.target.value)}
           />
           {errors.includes("previewImageLength") ? (
-            <p>
-              Preview image is required
-            </p>
+            <p>Preview image is required</p>
           ) : null}
           {errors.includes("previewImageInvalid") ? (
-            <p>
-              Image URL must be .png, .jpg, or .jpeg
-            </p>
+            <p>Image URL must be .png, .jpg, or .jpeg</p>
           ) : null}
           <div>
             <input
@@ -320,9 +297,7 @@ export const EditSpotForm = () => {
               onChange={(e) => setImage1(e.target.value)}
             />
             {errors.includes("img1") ? (
-              <p>
-                Image URL must be .png, .jpg, or .jpeg
-              </p>
+              <p>Image URL must be .png, .jpg, or .jpeg</p>
             ) : null}
           </div>
           <div>
@@ -346,9 +321,7 @@ export const EditSpotForm = () => {
               onChange={(e) => setImage3(e.target.value)}
             />
             {errors.includes("image3") ? (
-              <p>
-                Image URL must end in .png, .jpg, or .jpeg
-              </p>
+              <p>Image URL must end in .png, .jpg, or .jpeg</p>
             ) : null}
           </div>
           <div>
@@ -359,9 +332,7 @@ export const EditSpotForm = () => {
               onChange={(e) => setImage4(e.target.value)}
             />
             {errors.includes("image4") ? (
-              <p>
-                Image URL must be .png, .jpg, or .jpeg
-              </p>
+              <p>Image URL must be .png, .jpg, or .jpeg</p>
             ) : null}
           </div>
         </div>

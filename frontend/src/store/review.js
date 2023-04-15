@@ -6,7 +6,7 @@ const REVIEWS = 'ALL_REVIEWS';
 const CURR_USER_REVIEWS = 'USER_REVIEWS';
 const CREATE_REVIEW = 'CREATE_REVIEW';
 const DELETE_REVIEW = 'DELETE_REVIEW';
-const RESET_REVIEWS = 'RESET_REVIEWS';
+
 
 
 // Action Creators
@@ -30,11 +30,6 @@ export const deleteReview = (reviewId) => ({
   reviewId
 });
 
-export const resetReviews = (reset) => ({
-  type: RESET_REVIEWS,
-  reset
-});
-
 // Normalize the data
 const normalizeAllReviews = (reviews) => {
   let normalized = {};
@@ -50,7 +45,6 @@ export const getAllReviews = (spotId) => async dispatch => {
   if (response.ok) {
     const reviews = await response.json();
     const normalized = normalizeAllReviews(reviews.Review);
-    console.log("normi", normalized);
 
     dispatch(allReviews(normalized));
     return normalized;
@@ -69,7 +63,7 @@ export const getSessionUserReviews = () => async dispatch => {
   }
 }
 
-export const createNewReview = (newReview, spotId) => async dispatch => {
+export const createNewReview = (newReview, spotId, user) => async dispatch => {
   const response = await csrfFetch(`/api/spots/${spotId}/reviews`, {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
@@ -77,10 +71,14 @@ export const createNewReview = (newReview, spotId) => async dispatch => {
   });
 
   if (response.ok) {
+    const review = response.json();
+    review.User = user;
 
-    dispatch(getAllReviews(spotId)).then(dispatch(getOneSpot(spotId)));
+    dispatch(getAllReviews(spotId))
+    dispatch(getOneSpot(spotId));
     return;
   };
+
 };
 
 export const deleteCurrUserReview = (reviewId, spotId) => async dispatch => {
@@ -94,12 +92,6 @@ export const deleteCurrUserReview = (reviewId, spotId) => async dispatch => {
     dispatch(getOneSpot(spotId));
     return data;
   }
-};
-
-export const resetAllReviews = () => async dispatch => {
-
-  dispatch(resetReviews(initialState));
-  return;
 };
 
 const initialState = { spot: {}, user: {} };
@@ -117,11 +109,10 @@ const reviewReducer = (state = initialState, action) => {
     }
 
     case CREATE_REVIEW:{
-      return {
-        ...state,
-        spot: { ...state.spot, [action.review.id]: action.review },
-        user: { ...state.user, [action.review.id]: action.review }
-      }
+      const newState = {...state, spot: {}}
+      newState.user = action.review
+      return newState
+
     }
 
     case DELETE_REVIEW:{
@@ -129,10 +120,6 @@ const reviewReducer = (state = initialState, action) => {
       delete newState.spot[action.reviewId]
       delete newState.user[action.reviewId]
       return newState;
-    }
-
-    case RESET_REVIEWS:{
-      return action.reset
     }
 
     default: return state

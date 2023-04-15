@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import { useDispatch } from "react-redux";
-import { reviews } from "../../store/review";
+import { useDispatch, useSelector } from "react-redux";
+import { createNewReview } from "../../store/review";
 import { useModal } from "./Modal";
 
 const CreateReviewForm = (id) => {
@@ -15,13 +15,14 @@ const CreateReviewForm = (id) => {
   const [showReview, setShowReview] = useState(false);
   const [showStars, setShowStars] = useState(false);
   const { closeModal } = useModal();
+  const user = useSelector(state => state.session.user)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors([]);
 
-    const newReview = await dispatch(reviews({ review, star, spotId }))
-      .then(closeModal())
+    const newReview = await dispatch(createNewReview(review, spotId, user));
+      (closeModal())
       .catch(async (res) => {
         const data = await res.json();
         setErrors([data.message]);

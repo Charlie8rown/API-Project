@@ -105,7 +105,7 @@ export const removeSpot = (id) => async dispatch => {
 
   if (response.ok) {
     const  deleted = await response.json();
-    console.log("this should delete", deleted);
+
     dispatch(deleteSpot(id));
     // dispatch(currUserSpots);
     return deleted;
@@ -123,7 +123,7 @@ export const currUserSpots = () => async (dispatch) => {
 export const updatingSpot = (spots, spotId, imageArr) => async (dispatch) => {
   const response = await csrfFetch(`/api/spots/${spotId}`, {
     method: "PUT",
-    headers: { 'content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(spots)
   });
 
