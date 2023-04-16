@@ -87,12 +87,14 @@ export const createSpots = ( createdSpot, createdImages) => async (dispatch) => 
       });
 
       let Image = await res.json();
+      // const clone = res.clone()
 
       if (res.ok) {
         spotData.SpotImages.push(Image)
+        return spotData.SpotImages;
       }
     }
-    await dispatch(createSpot(spotData))
+    dispatch(createSpot(spotData))
 
     return spotData;
   }
@@ -120,26 +122,45 @@ export const currUserSpots = () => async (dispatch) => {
   return spots;
 };
 
-export const updatingSpot = (spots, spotId, imageArr) => async (dispatch) => {
+export const updatingSpot = (spots, spotId) => async (dispatch) => {
+  // const newUpdatedSpot = {
+  //   country,
+  //   address,
+  //   city,
+  //   state,
+  //   description,
+  //   name,
+  //   price,
+  // };
+  const {country, address, city, state, description, name, price} = spots
   const response = await csrfFetch(`/api/spots/${spotId}`, {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(spots)
+    body: JSON.stringify({country, address, city, state, description, name, price})
   });
 
-  if (response.ok) {
-    const data = await response.json()
-    for (let image of imageArr) {
-      if (image.url) {
-        await csrfFetch(`/api/spots/${spotId}/images`, {
-          method: "PUT",
-          headers: { 'Content-Type': 'application/json'},
-          body: JSON.stringify(image)
-        });
-      };
+    if (response.ok) {
+      const newSpot = await response.json()
+
+      dispatch (updateSpot(newSpot))
+      return newSpot;
     }
-    return data;
-  }
+
+
+
+  // if (response.ok) {
+  //   const data = await response.json()
+  //   for (let image of imageArr) {
+  //     if (image.url) {
+  //       await csrfFetch(`/api/spots/${spotId}/images`, {
+  //         method: "PUT",
+  //         headers: { 'Content-Type': 'application/json'},
+  //         body: JSON.stringify(image)
+  //       });
+  //     };
+  //   }
+  //   return data;
+  // }
 }
 
 

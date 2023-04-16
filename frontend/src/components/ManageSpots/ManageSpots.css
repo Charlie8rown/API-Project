@@ -1,0 +1,50 @@
+.manage-page {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 20px;
+}
+
+.spot-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.location {
+  font-size: 1.2rem;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  color: gold;
+}

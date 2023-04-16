@@ -1,0 +1,104 @@
+.create-spot-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.create-spot-form-container h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+}
+
+.create-spot-form-container form {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  max-width: 600px;
+}
+
+.create-spot-form-container label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.create-spot-form-container label input,
+.create-spot-form-container label textarea {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.create-spot-form-container label input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.create-spot-form-container label input:focus,
+.create-spot-form-container label textarea:focus {
+  outline: none;
+  border: 2px solid #ccc;
+}
+
+.create-spot-form-container .error {
+  color: red;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.create-spot-form-container button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.create-spot-form-container button[type="submit"]:hover {
+  background-color: #0069d9;
+}
+
+@media only screen and (max-width: 768px) {
+  .create-spot-form-container form {
+    width: 100%;
+    padding: 0 15px;
+  }
+
+  .create-spot-form-container label {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+
+  .create-spot-form-container label input,
+  .create-spot-form-container label textarea {
+    font-size: 14px;
+  }
+
+  .create-spot-form-container .error {
+    font-size: 12px;
+  }
+
+  .create-spot-form-container label:first-child input {
+    margin-bottom: 10px;
+  }
+
+  .create-spot-form-container label:nth-child(2) input {
+    margin-bottom: 10px;
+  }
+
+  .create-spot-form-container label:nth-child(3) input {
+    margin-right: 10px;
+  }
+}
+
+.create-spot-form-container label input[name="city"],
+.create-spot-form-container label input[name="state"] {
+  width: 100%;
+  padding: 5px;
+  margin: 5px;
+}

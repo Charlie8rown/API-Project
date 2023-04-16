@@ -48,52 +48,48 @@ const ManageSpots = () => {
   };
 
   return (
-    <div>
+    <div className="manage-page">
+    <div className="title-container">
       <h1>Manage Spots</h1>
       <NavLink to="/spots/new">
         <button>Create a New Spot</button>
       </NavLink>
-      {errors.length > 0 && (
-        <div>
-          {errors.map((error) => (
-            <div key={error}>
-              <div>{error}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {errors.length === 0 && (
-        <ul>
-          {spots.map((spot) => (
-            <li key={spot.id}>
-              <NavLink to={`/spots/${spot.id}`}>
-                <div>{spot.name}</div>
-                <img src={`${spot.previewImage}`} alt="spotPreviewImage"></img>
-                <div>
-                  {spot.city}, {spot.state}
-                </div>
-                <div>{rating(spot.avgRating)}</div>
-                <div>{`$${spot.price}`} night</div>
-                <div></div>
-              </NavLink>
-              <div>
-                <div>
+    </div>
+    {errors.length > 0 && (
+      <div>
+        {errors.map((error) => (
+          <div key={error}>
+            <div>{error}</div>
+          </div>
+        ))}
+      </div>
+    )}
+    {errors.length === 0 && (
+      <ul className="spot-list">
+        {spots.map((spot) => (
+          <li key={spot.id}>
+            <NavLink to={`/spots/${spot.id}`}>
+              <img src={`${spot.previewImage}`} alt="spotPreviewImage"></img>
+              <div className="spot-info">
+                <div className="location">{spot.city}, {spot.state}</div>
+                <div className="price">{`$${spot.price}`} night</div>
+                <div className="actions">
                   <NavLink to={`/spots/${spot.id}/edit`}>
                     <button>Update</button>
                   </NavLink>
-                </div>
-                <div>
                   <OpenModalButton
                     buttonText="Delete"
                     modalComponent={<DeleteSpot spotId={spot.id} />}
                   />
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+              <div className="rating">{rating(spot.avgRating)}</div>
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
   );
 };
 
