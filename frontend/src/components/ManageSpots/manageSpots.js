@@ -38,7 +38,7 @@ const ManageSpots = () => {
   }
 
   if (!spots) {
-    return <h1></h1>;
+    return <h1>"User has no spots"</h1>;
   }
 
   const rating = (rating) => {
@@ -49,47 +49,52 @@ const ManageSpots = () => {
 
   return (
     <div className="manage-page">
-    <div className="title-container">
-      <h1>Manage Spots</h1>
-      <NavLink to="/spots/new">
-        <button>Create a New Spot</button>
-      </NavLink>
-    </div>
-    {errors.length > 0 && (
-      <div>
-        {errors.map((error) => (
-          <div key={error}>
-            <div>{error}</div>
-          </div>
-        ))}
+      <div className="title-create-container">
+        <h1>Manage Spots</h1>
+        <div className="Manage-create-spot-button">
+          <NavLink to="/spots/new">
+            <button>Create a New Spot</button>
+          </NavLink>
+        </div>
       </div>
-    )}
-    {errors.length === 0 && (
-      <ul className="spot-list">
-        {spots.map((spot) => (
-          <li key={spot.id}>
-            <NavLink to={`/spots/${spot.id}`}>
-              <img src={`${spot.previewImage}`} alt="spotPreviewImage"></img>
-              <div className="spot-info">
-                <div className="location">{spot.city}, {spot.state}</div>
-                <div className="price">{`$${spot.price}`} night</div>
-                <div className="actions">
-                  <NavLink to={`/spots/${spot.id}/edit`}>
-                    <button>Update</button>
-                  </NavLink>
-                  <OpenModalButton
-                    buttonText="Delete"
-                    modalComponent={<DeleteSpot spotId={spot.id} />}
-                  />
+      {errors.length > 0 && (
+        <div>
+          {errors.map((error) => (
+            <div key={error}>
+              <div>{error}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {errors.length === 0 && (
+        <ul className="manage-spot-list">
+          {spots.map((spot) => (
+            <li key={spot.id}>
+              <NavLink to={`/spots/${spot.id}`}>
+                <img src={`${spot.previewImage}`} alt="spotPreviewImage"></img>
+                <div className="manage-spot-info">
+                  <div className="manage-spot-location">
+                    {spot.city}, {spot.state}
+                  </div>
+                  <div className="manage-spot-price">{`$${spot.price}`} night</div>
                 </div>
+              </NavLink>
+              <div className="manage-actions">
+                <NavLink to={`/spots/${spot.id}/edit`}>
+
+                <button>Update</button>
+                </NavLink>
+                <OpenModalButton
+                  buttonText="Delete"
+                  modalComponent={<DeleteSpot spotId={spot.id} />}
+                  />
               </div>
-              <div className="rating">{rating(spot.avgRating)}</div>
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
+              <div className="manage-rating">{rating(spot.avgRating)}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };
 

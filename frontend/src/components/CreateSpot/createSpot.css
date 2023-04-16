@@ -95,10 +95,3 @@
     margin-right: 10px;
   }
 }
-
-.create-spot-form-container label input[name="city"],
-.create-spot-form-container label input[name="state"] {
-  width: 100%;
-  padding: 5px;
-  margin: 5px;
-}

@@ -18,10 +18,10 @@ export const EditSpotForm = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [previewImage, setPreviewImage] = useState("");
-  const [image1, setImage1] = useState("");
-  const [image2, setImage2] = useState("");
-  const [image3, setImage3] = useState("");
-  const [image4, setImage4] = useState("");
+  // const [image1, setImage1] = useState("");
+  // const [image2, setImage2] = useState("");
+  // const [image3, setImage3] = useState("");
+  // const [image4, setImage4] = useState("");
   const [errors, setErrors] = useState([]);
   const currUser = useSelector((state) => state.session.user);
 
@@ -147,6 +147,8 @@ export const EditSpotForm = () => {
 
       // await dispatch(updatingSpot(newUpdatedSpot, spotId, imageArr));
     const updatedSpot = await dispatch(updatingSpot(newUpdatedSpot, spotId))
+    console.log("updatespot", updatedSpot);
+    console.log("spotid", spotId);
       if (updatedSpot){
         history.push(`/spots/${spotId}`)
       };
@@ -291,7 +293,7 @@ export const EditSpotForm = () => {
           ) : null}
         </div>
         <div>
-          <h3>Liven up your spot with photos</h3>
+          {/* <h3>Liven up your spot with photos</h3>
           <p>Submit a link to at least one photo to publish your spot.</p>
           <input
             type="text"
@@ -304,7 +306,7 @@ export const EditSpotForm = () => {
           ) : null}
           {errors.includes("previewImageInvalid") ? (
             <p>Image URL must be .png, .jpg, or .jpeg</p>
-          ) : null}
+          ) : null} */}
           {/* <div>
             <input
               type="text"
