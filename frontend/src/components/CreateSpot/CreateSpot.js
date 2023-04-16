@@ -169,12 +169,27 @@ const CreateSpotForm = () => {
         const newestSpot = await dispatch(
           createSpots(newSpot, imageList)
         );
+          const newSpotId = newestSpot.map(spot => spot.id)
         // setSubmit(false);
-        history.push(`/spots/${newestSpot.id}`);
+        history.push(`/spots/${newSpotId}`);
       } catch (error) {
         console.log(error);
       }
     }
+
+    // if (Object.keys(errors).length === 0) {
+    //   // try {
+    //     const newestSpot = await dispatch(
+    //       createSpots(newSpot, imageList)
+    //     )
+    //     // setSubmit(false);
+    //     history.push(`/spots`)
+    //     history.push(`/spots/${newestSpot.id}`);
+    //   // }
+    //   // catch (error) {
+    //   //   console.log(error);
+    //   // }
+    // }
   };
 
   // if (Object.keys(errors).length > 0) {
@@ -217,23 +232,25 @@ const CreateSpotForm = () => {
           />
         </label>
         {errors.address && <div className="error">{errors.address}</div>}
-        <label>
-          City:
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          />
-        </label>
-        {errors.city && <div className="error">{errors.city}</div>}
-        <label>
-          State:
-          <input
-            type="text"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-          />
-        </label>
+        <div style={{display: "flex"}}>
+          <label style={{marginRight: "10px"}}>
+            City:
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </label>
+          {errors.city && <div className="error">{errors.city}</div>}
+          <label>
+            State:
+            <input
+              type="text"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+            />
+          </label>
+        </div>
         {errors.state && <div className="error">{errors.state}</div>}
         <label>
           Name:

@@ -17,10 +17,6 @@ const SpotDetails = () => {
   const arr = Object.values(spotReviews).reverse();
   const currUserReviewId = Object.values(spotReviews).map((review) => review);
 
-  console.log("user", currUser);
-
-
-
 
   const months = [
     "January",
@@ -39,8 +35,11 @@ const SpotDetails = () => {
 
   useEffect(() => {
     dispatch(getOneSpot(spotId));
-    dispatch(getAllReviews(spotId));
   }, [dispatch, spotId]);
+
+  useEffect(() => {
+    dispatch(getAllReviews(spotId));
+  }, [dispatch, spotId])
 
   if (!spotDetail || !spotDetail.name || !spotDetail.SpotImages) {
     return (

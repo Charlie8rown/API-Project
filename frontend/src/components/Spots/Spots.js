@@ -22,27 +22,21 @@ const Spots = () => {
   };
 
   return (
-    <div className="cards-div">
+    <div className="spot-container">
       {spots.map(({ id, name, previewImage, city, state, price, avgRating }) => {
         return (
           <NavLink to={`/spots/${id}`} className="spot-nav-link" key={id}>
-            <img src={previewImage} alt={name} className="img" />
+            <img src={previewImage} alt={name} className="all-spots-image" />
             <div>
               <div>
                 {city}, {state}
               </div>
               <div>{rating(avgRating)}</div>
             </div>
-            <div>${price} night</div>
+            <div className="spot-price">${price} night</div>
           </NavLink>
         );
       })}
-
-      <Switch>
-        <Route path="/spots/:id">
-          <SpotDetails spots={spots} />
-        </Route>
-      </Switch>
     </div>
   );
 };

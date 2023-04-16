@@ -27,21 +27,21 @@ export const EditSpotForm = () => {
 
   useEffect(() => {
     if (spot) {
-      setCountry(spot.country || "");
-      setAddress(spot.address || "");
-      setCity(spot.city || "");
-      setState(spot.state || "");
-      setDescription(spot.description || "");
-      setName(spot.name || "");
-      setPrice(spot.price || "");
-      setPreviewImage(spot.previewImage || "");
+      setCountry(spot.country);
+      setAddress(spot.address);
+      setCity(spot.city);
+      setState(spot.state);
+      setDescription(spot.description);
+      setName(spot.name);
+      setPrice(spot.price);
+      // setPreviewImage(spot.previewImage || "");
     }
   }, [spot]);
 
   useEffect(() => {
     dispatch(currUserSpots());
     dispatch(getOneSpot(spotId));
-  }, [dispatch]);
+  }, [dispatch, spotId]);
 
   if (!spot) {
     return <h1>Loading...</h1>;
@@ -92,38 +92,38 @@ export const EditSpotForm = () => {
       err.push("previewImageInvalid");
     }
 
-    if (
-      image1.length > 0 &&
-      !image1.endsWith(".jpg") &&
-      !image1.endsWith(".jpeg") &&
-      !image1.endsWith(".png")
-    ) {
-      err.push("image1");
-    }
-    if (
-      image2.length > 0 &&
-      !image2.endsWith(".jpg") &&
-      !image2.endsWith(".jpeg") &&
-      !image2.endsWith(".png")
-    ) {
-      err.push("image2");
-    }
-    if (
-      image3.length > 0 &&
-      !image3.endsWith(".jpg") &&
-      !image3.endsWith(".jpeg") &&
-      !image3.endsWith(".png")
-    ) {
-      err.push("image3");
-    }
-    if (
-      image4.length > 0 &&
-      !image4.endsWith(".jpg") &&
-      !image4.endsWith(".jpeg") &&
-      !image4.endsWith(".png")
-    ) {
-      err.push("image4");
-    }
+    // if (
+    //   image1.length > 0 &&
+    //   !image1.endsWith(".jpg") &&
+    //   !image1.endsWith(".jpeg") &&
+    //   !image1.endsWith(".png")
+    // ) {
+    //   err.push("image1");
+    // }
+    // if (
+    //   image2.length > 0 &&
+    //   !image2.endsWith(".jpg") &&
+    //   !image2.endsWith(".jpeg") &&
+    //   !image2.endsWith(".png")
+    // ) {
+    //   err.push("image2");
+    // }
+    // if (
+    //   image3.length > 0 &&
+    //   !image3.endsWith(".jpg") &&
+    //   !image3.endsWith(".jpeg") &&
+    //   !image3.endsWith(".png")
+    // ) {
+    //   err.push("image3");
+    // }
+    // if (
+    //   image4.length > 0 &&
+    //   !image4.endsWith(".jpg") &&
+    //   !image4.endsWith(".jpeg") &&
+    //   !image4.endsWith(".png")
+    // ) {
+    //   err.push("image4");
+    // }
 
     if (err.length) return setErrors(err);
 
@@ -137,21 +137,37 @@ export const EditSpotForm = () => {
       price,
     };
 
-    const imageArr = [
-      { url: previewImage, preview: true },
-      { url: image1, preview: false },
-      { url: image2, preview: false },
-      { url: image3, preview: false },
-      { url: image4, preview: false },
-    ];
+    // const imageArr = [
+    //   { url: previewImage, preview: true },
+    //   { url: image1, preview: false },
+    //   { url: image2, preview: false },
+    //   { url: image3, preview: false },
+    //   { url: image4, preview: false },
+    // ];
+
+      // await dispatch(updatingSpot(newUpdatedSpot, spotId, imageArr));
+    const updatedSpot = await dispatch(updatingSpot(newUpdatedSpot, spotId))
+      if (updatedSpot){
+        history.push(`/spots/${spotId}`)
+      };
+
 
     // await dispatch(updatingSpot(newUpdatedSpot, spotId, imageArr));
-    const updatedSpot = await dispatch(updatingSpot(newUpdatedSpot, spotId, imageArr));
-    if (updatedSpot) {
-      return history.push(`/spots/${spotId}`);
-    }
+    // await dispatch(updatingSpot({ newUpdatedSpot, spotId, imageArr })).then(
+    //   (res) => {
+    //     if (res.ok) return res.json();
+    //   }
+    // );
 
+    // if (updatedSpot) {
+    //   return history.push(`/spots/${spotId}`);
+    // }
 
+    //     const updatedSpot = await dispatch(updatingSpot({newUpdatedSpot, spotId, imageArr}));
+    // if (updatedSpot.ok) {
+    //   const result = await updatedSpot.json();
+    // perform additional actions with the result here
+    // }
   };
 
   return (
@@ -289,7 +305,7 @@ export const EditSpotForm = () => {
           {errors.includes("previewImageInvalid") ? (
             <p>Image URL must be .png, .jpg, or .jpeg</p>
           ) : null}
-          <div>
+          {/* <div>
             <input
               type="text"
               placeholder="Image URL"
@@ -334,7 +350,7 @@ export const EditSpotForm = () => {
             {errors.includes("image4") ? (
               <p>Image URL must be .png, .jpg, or .jpeg</p>
             ) : null}
-          </div>
+          </div> */}
         </div>
         <div>
           <button type="submit">Update Spot</button>

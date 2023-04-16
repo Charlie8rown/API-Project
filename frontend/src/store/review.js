@@ -33,10 +33,9 @@ export const deleteReview = (reviewId) => ({
 // Normalize the data
 const normalizeAllReviews = (reviews) => {
   let normalized = {};
-  reviews.forEach(review => normalized[review.id] = review)
+  reviews?.forEach(review => normalized[review.id] = review)
   return normalized;
 };
-
 
 // Thunks
 export const getAllReviews = (spotId) => async dispatch => {
@@ -44,6 +43,7 @@ export const getAllReviews = (spotId) => async dispatch => {
 
   if (response.ok) {
     const reviews = await response.json();
+    console.log("norm", reviews);
     const normalized = normalizeAllReviews(reviews.Review);
 
     dispatch(allReviews(normalized));
