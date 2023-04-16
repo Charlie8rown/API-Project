@@ -132,11 +132,12 @@ export const updatingSpot = (spots, spotId) => async (dispatch) => {
   //   name,
   //   price,
   // };
-  const {country, address, city, state, description, name, price} = spots
+  // const {country, address, city, state, description, name, price} = spots
   const response = await csrfFetch(`/api/spots/${spotId}`, {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({country, address, city, state, description, name, price})
+    // body: JSON.stringify({country, address, city, state, description, name, price})
+    body: JSON.stringify(spots)
   });
 
     if (response.ok) {
@@ -146,6 +147,7 @@ export const updatingSpot = (spots, spotId) => async (dispatch) => {
       return newSpot;
     }
 
+  }
 
 
   // if (response.ok) {
@@ -161,7 +163,6 @@ export const updatingSpot = (spots, spotId) => async (dispatch) => {
   //   }
   //   return data;
   // }
-}
 
 
 // Spot Reducer
